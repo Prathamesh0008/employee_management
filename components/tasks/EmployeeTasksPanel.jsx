@@ -14,7 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const STATUS_OPTIONS = ["pending", "in-progress", "completed"];
-const AUTO_REFRESH_MS = 10000;
+const AUTO_REFRESH_MS = 5000;
 
 const STATUS_STYLES = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -33,6 +33,16 @@ function formatStatusLabel(status) {
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function truncateWords(text, maxWords = 2, maxChars = 28) {
+  const value = String(text || "").trim();
+  if (!value) return "-";
+  const words = value.split(/\s+/);
+  const sliced = words.slice(0, maxWords).join(" ");
+  const shortByWords = words.length > maxWords ? `${sliced}...` : sliced;
+  if (shortByWords.length <= maxChars) return shortByWords;
+  return `${shortByWords.slice(0, maxChars).trimEnd()}...`;
 }
 
 const containerVariants = {
@@ -381,7 +391,9 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                   </motion.span>
                 </div>
                 
-                <p className="mt-1 line-clamp-2 text-sm text-slate-500">{task.description}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  {truncateWords(task.description, 2)}
+                </p>
 
                 <button
                   type="button"
@@ -452,8 +464,16 @@ export default function EmployeeTasksPanel({ initialTasks }) {
         </div>
 
         {/* Desktop Table View */}
-        <div className="hidden overflow-x-auto rounded-xl border border-slate-200 lg:block">
-          <table className="min-w-full divide-y divide-slate-200">
+        <div className="hidden overflow-hidden rounded-xl border border-slate-200 lg:block">
+          <table className="w-full table-fixed divide-y divide-slate-200">
+            <colgroup>
+              <col className="w-[32%]" />
+              <col className="w-[18%]" />
+              <col className="w-[12%]" />
+              <col className="w-[8%]" />
+              <col className="w-[10%]" />
+              <col className="w-[20%]" />
+            </colgroup>
             <thead className="bg-slate-50">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Task</th>
@@ -475,7 +495,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                     transition={{ delay: index * 0.05 }}
                     className="group hover:bg-slate-50"
                   >
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4">
                       <div>
                         <button
                           type="button"
@@ -484,7 +504,12 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                         >
                           {task.title}
                         </button>
-                        <p className="max-w-md truncate text-sm text-slate-500">{task.description}</p>
+                        <p
+                          title={task.description}
+                          className="mt-1 max-w-[230px] truncate text-sm text-slate-600"
+                        >
+                          {truncateWords(task.description, 2)}
+                        </p>
                         <button
                           type="button"
                           onClick={() => openTaskDetails(task)}
@@ -495,13 +520,13 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                         </button>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
-                      {task.assignedBy?.name || "Unknown"}
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      <p className="truncate">{task.assignedBy?.name || "Unknown"}</p>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
-                      {new Date(task.taskDate).toLocaleDateString()}
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      <p className="truncate">{new Date(task.taskDate).toLocaleDateString()}</p>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4">
                       <motion.span
                         whileHover={{ scale: 1.05 }}
                         className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
@@ -511,7 +536,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                         {task.priority}
                       </motion.span>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4">
                       <motion.span
                         whileHover={{ scale: 1.05 }}
                         className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
@@ -521,8 +546,8 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                         {formatStatusLabel(task.status)}
                       </motion.span>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-3 py-4">
+                      <div className="flex items-center justify-end gap-1.5">
                         <div className="relative">
                           <select
                             value={selectedStatus[task._id] || task.status}
@@ -532,7 +557,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                                 [task._id]: event.target.value,
                               }))
                             }
-                            className="cursor-pointer appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 pr-8 text-sm font-medium text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                            className="w-28 cursor-pointer appearance-none rounded-lg border border-slate-300 bg-white px-2.5 py-2 pr-7 text-sm font-medium text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                           >
                             {STATUS_OPTIONS.map((statusOption) => (
                               <option key={statusOption} value={statusOption}>
@@ -549,7 +574,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                           type="button"
                           onClick={() => updateTask(task._id)}
                           disabled={savingTaskId === task._id}
-                          className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 disabled:bg-blue-300"
+                          className="shrink-0 rounded-lg bg-blue-500 px-2.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-600 disabled:bg-blue-300"
                         >
                           {savingTaskId === task._id ? (
                             <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">

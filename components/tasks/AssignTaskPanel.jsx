@@ -24,7 +24,17 @@ const STATUS_STYLES = {
   "in-progress": "bg-blue-50 text-blue-700 border-blue-200",
   completed: "bg-green-50 text-green-700 border-green-200",
 };
-const AUTO_REFRESH_MS = 10000;
+const AUTO_REFRESH_MS = 5000;
+
+function truncateWords(text, maxWords = 2, maxChars = 28) {
+  const value = String(text || "").trim();
+  if (!value) return "-";
+  const words = value.split(/\s+/);
+  const sliced = words.slice(0, maxWords).join(" ");
+  const shortByWords = words.length > maxWords ? `${sliced}...` : sliced;
+  if (shortByWords.length <= maxChars) return shortByWords;
+  return `${shortByWords.slice(0, maxChars).trimEnd()}...`;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -466,7 +476,9 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                   </motion.span>
                 </div>
                 
-                <p className="mt-2 text-sm text-slate-500 line-clamp-2">{task.description}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {truncateWords(task.description, 2)}
+                </p>
                 
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                   <span className="flex items-center gap-1 rounded-full bg-slate-50 px-2 py-1">
@@ -491,8 +503,8 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
         </div>
 
         {/* Desktop Table View */}
-        <div className="hidden overflow-x-auto rounded-xl border border-slate-200 lg:block">
-          <table className="min-w-full divide-y divide-slate-200">
+        <div className="hidden overflow-hidden rounded-xl border border-slate-200 lg:block">
+          <table className="w-full table-auto divide-y divide-slate-200">
             <thead className="bg-slate-50">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Task Details</th>
@@ -517,7 +529,12 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                     <td className="px-6 py-4">
                       <div>
                         <p className="font-medium text-slate-900">{task.title}</p>
-                        <p className="mt-1 text-sm text-slate-500 line-clamp-2">{task.description}</p>
+                        <p
+                          title={task.description}
+                          className="mt-1 max-w-[230px] truncate text-sm text-slate-600"
+                        >
+                          {truncateWords(task.description, 2)}
+                        </p>
                       </div>
                     </td>
                     <td className="px-6 py-4">

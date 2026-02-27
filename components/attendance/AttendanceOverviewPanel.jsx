@@ -19,7 +19,7 @@ import {
   BeakerIcon,
 } from "@heroicons/react/24/outline";
 
-const AUTO_REFRESH_MS = 30000;
+const AUTO_REFRESH_MS = 5000;
 
 function formatTime(value) {
   if (!value) return "-";
