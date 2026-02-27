@@ -1,7 +1,7 @@
 "use client";
 
 import { apiFetch } from "@/lib/client-api";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   CheckCircleIcon, 
@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const STATUS_OPTIONS = ["pending", "in-progress", "completed"];
+const AUTO_REFRESH_MS = 10000;
 
 const STATUS_STYLES = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -94,9 +95,59 @@ export default function EmployeeTasksPanel({ initialTasks }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
+  const loadTasks = useCallback(async ({ silent = false } = {}) => {
+    try {
+      const response = await apiFetch("/api/tasks?limit=200", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (!silent) {
+          setError(data.error || "Failed to refresh tasks");
+        }
+        return;
+      }
+
+      const latestTasks = data.tasks || [];
+      setTasks(latestTasks);
+
+      const latestStatusMap = {};
+      for (const task of latestTasks) {
+        latestStatusMap[task._id] = task.status;
+      }
+      setSelectedStatus(latestStatusMap);
+    } catch {
+      if (!silent) {
+        setError("Unable to refresh tasks");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void loadTasks({ silent: true });
+      }
+    }, AUTO_REFRESH_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void loadTasks({ silent: true });
+      }
+    };
+
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [loadTasks]);
 
   const counts = useMemo(() => {
     const total = tasks.length;
@@ -110,7 +161,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
     return counts.total > 0 ? Math.round((counts.completed / counts.total) * 100) : 0;
   }, [counts]);
 
-  const updateTask = async (taskId) => {
+  const updateTask = useCallback(async (taskId) => {
     const status = selectedStatus[taskId];
 
     setSavingTaskId(taskId);
@@ -129,15 +180,13 @@ export default function EmployeeTasksPanel({ initialTasks }) {
         return;
       }
 
-      setTasks((previous) =>
-        previous.map((task) => (task._id === taskId ? { ...task, status: data.task.status } : task)),
-      );
+      await loadTasks({ silent: true });
     } catch {
       setError("Unable to update task");
     } finally {
       setSavingTaskId("");
     }
-  };
+  }, [loadTasks, selectedStatus]);
 
   const openTaskDetails = (task) => {
     setSelectedTask(task);

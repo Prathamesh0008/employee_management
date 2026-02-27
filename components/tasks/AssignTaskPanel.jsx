@@ -1,7 +1,7 @@
 "use client";
 
 import { apiFetch } from "@/lib/client-api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   PlusIcon, 
@@ -24,6 +24,7 @@ const STATUS_STYLES = {
   "in-progress": "bg-blue-50 text-blue-700 border-blue-200",
   completed: "bg-green-50 text-green-700 border-green-200",
 };
+const AUTO_REFRESH_MS = 10000;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +90,49 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
     setIsLoaded(true);
   }, []);
 
+  const loadTasks = useCallback(async ({ silent = false } = {}) => {
+    try {
+      const response = await apiFetch("/api/tasks?limit=200", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (!silent) {
+          setError(data.error || "Failed to refresh tasks");
+        }
+        return;
+      }
+
+      setTasks(data.tasks || []);
+    } catch {
+      if (!silent) {
+        setError("Unable to refresh tasks");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void loadTasks({ silent: true });
+      }
+    }, AUTO_REFRESH_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void loadTasks({ silent: true });
+      }
+    };
+
+    window.addEventListener("focus", onVisible);
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", onVisible);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [loadTasks]);
+
   const onChange = (event) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -112,7 +156,6 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
         return;
       }
 
-      setTasks((prev) => [data.task, ...prev]);
       setForm((prev) => ({
         ...prev,
         title: "",
@@ -120,6 +163,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
         priority: "medium",
         taskDate: new Date().toISOString().slice(0, 10),
       }));
+      await loadTasks({ silent: true });
       
       setShowSuccessMessage(true);
       setTimeout(() => setShowSuccessMessage(false), 3000);
