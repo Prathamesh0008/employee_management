@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+* {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a[href],
+[role="button"],
+summary,
+select,
+label[for],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled,
+input:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Tailwind safelist for dynamic utility classes used via template strings */
+@source inline("bg-{amber,orange,indigo,emerald,blue,purple,rose,slate}-{50,100} text-{amber,orange,indigo,emerald,blue,purple,rose,slate}-{500,600,700} border-{amber,orange,indigo,emerald,blue,purple,rose,slate}-200 from-{amber,orange,indigo,emerald,blue,purple,rose,slate}-50 from-{amber,orange,indigo,emerald,blue,purple,rose,slate}-500 to-{amber,orange,indigo,emerald,blue,purple,rose,slate}-400 hover:bg-{amber,orange,indigo,emerald,blue,purple,rose,slate}-100");

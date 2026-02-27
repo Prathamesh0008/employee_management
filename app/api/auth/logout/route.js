@@ -1,0 +1,19 @@
+import { NextResponse } from "next/server";
+
+import { AUTH_COOKIE_NAME } from "@/lib/auth";
+import { clearCsrfCookie } from "@/lib/csrf";
+
+export async function POST() {
+  const response = NextResponse.json({ message: "Logged out" }, { status: 200 });
+
+  response.cookies.set(AUTH_COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+  clearCsrfCookie(response);
+
+  return response;
+}
