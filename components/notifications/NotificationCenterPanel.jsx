@@ -20,8 +20,29 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { apiFetch } from "@/lib/client-api";
+import { prepareNotificationSound, testNotificationSound } from "@/lib/notification-sound";
 
 const NOTIFICATION_REFRESH_MS = 5000;
+
+function formatApiError(data, fallbackMessage) {
+  if (!data || typeof data !== "object") {
+    return fallbackMessage;
+  }
+
+  const fieldErrors = data.details?.fieldErrors;
+
+  if (fieldErrors && typeof fieldErrors === "object") {
+    const messages = Object.values(fieldErrors)
+      .flat()
+      .filter(Boolean);
+
+    if (messages.length > 0) {
+      return messages.join(" ");
+    }
+  }
+
+  return data.error || fallbackMessage;
+}
 
 function formatDateTime(value) {
   return new Date(value).toLocaleString('en-US', {
@@ -139,6 +160,10 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
 
   useEffect(() => {
     setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    prepareNotificationSound();
   }, []);
 
   const notifyUnreadChanged = useCallback(() => {
@@ -290,18 +315,36 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
     event.preventDefault();
     setError("");
     setSuccess("");
+
+    const trimmedTitle = broadcast.title.trim();
+    const trimmedMessage = broadcast.message.trim();
+
+    if (trimmedTitle.length < 3) {
+      setError("Title must be at least 3 characters.");
+      return;
+    }
+
+    if (trimmedMessage.length < 3) {
+      setError("Message must be at least 3 characters.");
+      return;
+    }
+
     setSending(true);
 
     try {
       const response = await apiFetch("/api/notifications/broadcast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(broadcast),
+        body: JSON.stringify({
+          title: trimmedTitle,
+          message: trimmedMessage,
+          audience: broadcast.audience,
+        }),
       });
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send message");
+        throw new Error(formatApiError(data, "Failed to send message"));
       }
 
       setSuccess("Broadcast sent successfully!");
@@ -315,6 +358,24 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
     } finally {
       setSending(false);
     }
+  };
+
+  const handleTestSound = async () => {
+    setError("");
+    setSuccess("");
+
+    const played = await testNotificationSound();
+
+    if (played) {
+      setSuccess("Notification sound played.");
+    } else {
+      setError("Sound is blocked by the browser. Click anywhere on the page once and try again.");
+    }
+
+    setTimeout(() => {
+      setSuccess("");
+      setError("");
+    }, 2500);
   };
 
   const filteredItems = items.filter(item => {
@@ -359,8 +420,23 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
               <p className="mt-1 text-sm text-slate-500">
                 In-app alerts for tasks, leaves, holidays and updates
               </p>
+              {canBroadcast && (
+                <p className="mt-1 text-xs text-slate-400">
+                  Broadcasts are delivered to recipients only. The sender does not receive the same notification.
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2">
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => void handleTestSound()}
+                className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm"
+              >
+                <BellAlertIcon className="h-4 w-4 text-indigo-500" />
+                <span className="text-xs sm:text-sm font-medium text-slate-700">Test sound</span>
+              </motion.button>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
@@ -606,6 +682,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
               <AnimatePresence mode="popLayout">
                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                   {filteredItems.map((item, index) => (
+                    (() => {
+                      const isHighPriorityTask =
+                        item.type === "task-assigned-high-priority" || item.meta?.priority === "high";
+
+                      return (
                     <motion.div
                       key={item._id}
                       variants={notificationVariants}
@@ -615,9 +696,13 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                       whileHover="hover"
                       transition={{ delay: index * 0.05 }}
                       className={`group relative overflow-hidden rounded-xl border transition-all duration-200 ${
-                        item.isRead 
-                          ? "border-slate-200 bg-white hover:border-slate-300" 
-                          : "border-blue-200 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 hover:border-blue-300"
+                        isHighPriorityTask
+                          ? item.isRead
+                            ? "border-rose-200 bg-gradient-to-r from-rose-50/60 to-orange-50/40 hover:border-rose-300"
+                            : "border-rose-300 bg-gradient-to-r from-rose-50 to-orange-50 hover:border-rose-400"
+                          : item.isRead 
+                            ? "border-slate-200 bg-white hover:border-slate-300" 
+                            : "border-blue-200 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 hover:border-blue-300"
                       }`}
                     >
                       {/* Unread Indicator */}
@@ -625,7 +710,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-indigo-500"
+                          className={`absolute left-0 top-0 bottom-0 w-1 ${
+                            isHighPriorityTask
+                              ? "bg-gradient-to-b from-rose-500 to-orange-500"
+                              : "bg-gradient-to-b from-blue-500 to-indigo-500"
+                          }`}
                         />
                       )}
 
@@ -635,15 +724,32 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className={`text-sm font-semibold ${
-                                item.isRead ? "text-slate-700" : "text-slate-900"
+                                isHighPriorityTask
+                                  ? "text-rose-700"
+                                  : item.isRead
+                                    ? "text-slate-700"
+                                    : "text-slate-900"
                               }`}>
                                 {item.title}
                               </h3>
+                              {isHighPriorityTask && (
+                                <motion.span
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold text-rose-700"
+                                >
+                                  Urgent
+                                </motion.span>
+                              )}
                               {!item.isRead && (
                                 <motion.span
                                   initial={{ scale: 0 }}
                                   animate={{ scale: 1 }}
-                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700"
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                    isHighPriorityTask
+                                      ? "bg-rose-100 text-rose-700"
+                                      : "bg-blue-100 text-blue-700"
+                                  }`}
                                 >
                                   New
                                 </motion.span>
@@ -651,7 +757,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                             </div>
                             
                             <p className={`text-sm mb-2 ${
-                              item.isRead ? "text-slate-500" : "text-slate-600"
+                              isHighPriorityTask
+                                ? "text-rose-700/90"
+                                : item.isRead
+                                  ? "text-slate-500"
+                                  : "text-slate-600"
                             }`}>
                               {item.message}
                             </p>
@@ -699,6 +809,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                         <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-gradient-to-br from-slate-100 to-white opacity-50 blur-2xl" />
                       </div>
                     </motion.div>
+                      );
+                    })()
                   ))}
                 </div>
               </AnimatePresence>

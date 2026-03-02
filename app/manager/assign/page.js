@@ -22,6 +22,8 @@ export default async function ManagerAssignPage() {
     Task.find({ assignedBy: user.id })
       .sort({ taskDate: -1, createdAt: -1 })
       .populate("assignedTo", "name email role")
+      .populate("assignedBy", "name email role")
+      .populate("comments.author", "name email role")
       .lean(),
   ]);
 

@@ -1,6 +1,12 @@
 "use client";
 
+import TaskDetailsModal from "@/components/tasks/TaskDetailsModal";
 import { apiFetch } from "@/lib/client-api";
+import {
+  getTaskProgressClasses,
+  getTaskProgressPercent,
+  getTaskTimingText,
+} from "@/lib/task-progress";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -10,6 +16,7 @@ import {
   FlagIcon,
   ClipboardDocumentListIcon,
   CheckCircleIcon,
+  EyeIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
 
@@ -34,6 +41,13 @@ function truncateWords(text, maxWords = 2, maxChars = 28) {
   const shortByWords = words.length > maxWords ? `${sliced}...` : sliced;
   if (shortByWords.length <= maxChars) return shortByWords;
   return `${shortByWords.slice(0, maxChars).trimEnd()}...`;
+}
+
+function formatStatusLabel(status) {
+  return String(status)
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 const containerVariants = {
@@ -88,6 +102,8 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
   const [submitting, setSubmitting] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [now, setNow] = useState(0);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -98,6 +114,12 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
 
   useEffect(() => {
     setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    setNow(Date.now());
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadTasks = useCallback(async ({ silent = false } = {}) => {
@@ -193,6 +215,19 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
       taskDate: new Date().toISOString().slice(0, 10),
     });
   };
+
+  const openTaskDetails = (task) => {
+    setSelectedTask(task);
+  };
+
+  const closeTaskDetails = () => {
+    setSelectedTask(null);
+  };
+
+  const handleTaskUpdated = useCallback((updatedTask) => {
+    setTasks((prev) => prev.map((task) => (task._id === updatedTask._id ? updatedTask : task)));
+    setSelectedTask(updatedTask);
+  }, []);
 
   return (
     <motion.div 
@@ -494,9 +529,36 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                       STATUS_STYLES[task.status] || STATUS_STYLES.pending
                     }`}
                   >
-                    {task.status}
+                    {formatStatusLabel(task.status)}
                   </span>
                 </div>
+
+                <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="mb-2 flex items-center justify-between gap-2 text-xs">
+                    <span className="font-medium text-slate-600">Progress</span>
+                      <span className="font-semibold text-slate-700">
+                        {getTaskProgressPercent(task, now)}%
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className={`h-full rounded-full bg-gradient-to-r ${getTaskProgressClasses(task, now)}`}
+                        style={{ width: `${getTaskProgressPercent(task, now)}%` }}
+                      />
+                    </div>
+                  <p className="mt-2 text-xs font-medium text-slate-500">
+                    {getTaskTimingText(task, now)}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openTaskDetails(task)}
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                >
+                  <EyeIcon className="h-3.5 w-3.5" />
+                  View comments
+                </button>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -511,7 +573,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                 <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Employee</th>
                 <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Due Date</th>
                 <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Priority</th>
-                <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status & Progress</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 bg-white">
@@ -528,13 +590,27 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                   >
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-slate-900">{task.title}</p>
+                        <button
+                          type="button"
+                          onClick={() => openTaskDetails(task)}
+                          className="text-left font-medium text-slate-900 hover:text-indigo-700"
+                        >
+                          {task.title}
+                        </button>
                         <p
                           title={task.description}
                           className="mt-1 max-w-[230px] truncate text-sm text-slate-600"
                         >
                           {truncateWords(task.description, 2)}
                         </p>
+                        <button
+                          type="button"
+                          onClick={() => openTaskDetails(task)}
+                          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                        >
+                          <EyeIcon className="h-3.5 w-3.5" />
+                          View comments
+                        </button>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -564,14 +640,33 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                       </motion.span>
                     </td>
                     <td className="px-6 py-4">
-                      <motion.span
-                        whileHover={{ scale: 1.05 }}
-                        className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
-                          STATUS_STYLES[task.status] || STATUS_STYLES.pending
-                        }`}
-                      >
-                        {task.status}
-                      </motion.span>
+                      <div className="min-w-[220px]">
+                        <motion.span
+                          whileHover={{ scale: 1.05 }}
+                          className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
+                            STATUS_STYLES[task.status] || STATUS_STYLES.pending
+                          }`}
+                        >
+                          {formatStatusLabel(task.status)}
+                        </motion.span>
+                        <div className="mt-3">
+                          <div className="mb-1.5 flex items-center justify-between gap-2 text-xs">
+                            <span className="font-medium text-slate-500">Progress</span>
+                              <span className="font-semibold text-slate-700">
+                              {getTaskProgressPercent(task, now)}%
+                            </span>
+                          </div>
+                          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                            <div
+                              className={`h-full rounded-full bg-gradient-to-r ${getTaskProgressClasses(task, now)}`}
+                              style={{ width: `${getTaskProgressPercent(task, now)}%` }}
+                            />
+                          </div>
+                          <p className="mt-2 text-xs font-medium text-slate-500">
+                            {getTaskTimingText(task, now)}
+                          </p>
+                        </div>
+                      </div>
                     </td>
                   </motion.tr>
                 ))}
@@ -593,6 +688,13 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
           </motion.div>
         )}
       </motion.section>
+
+      <TaskDetailsModal
+        task={selectedTask}
+        isDarkMode={false}
+        onClose={closeTaskDetails}
+        onTaskUpdated={handleTaskUpdated}
+      />
     </motion.div>
   );
 }

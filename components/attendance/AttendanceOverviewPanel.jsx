@@ -1,5 +1,4 @@
 "use client";
-
 import { apiFetch } from "@/lib/client-api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -930,6 +929,7 @@ export default function AttendanceOverviewPanel({ title }) {
             </motion.div>
           </motion.section>
         )}
+
       </div>
     </motion.div>
   );

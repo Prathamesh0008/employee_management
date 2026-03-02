@@ -11,9 +11,10 @@ import {
   EyeIcon,
   EyeSlashIcon,
   BuildingOfficeIcon,
-  CheckCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+
+const SAVED_LOGIN_EMAIL_KEY = "ems:saved-login-email";
 
 const ROLE_REDIRECT = {
   boss: "/boss/dashboard",
@@ -72,6 +73,12 @@ export default function LoginForm() {
     setIsLoaded(true);
     const next = new URLSearchParams(window.location.search).get("next") || "";
     setNextPath(next);
+    const savedEmail = window.localStorage.getItem(SAVED_LOGIN_EMAIL_KEY) || "";
+
+    if (savedEmail) {
+      setForm((previous) => ({ ...previous, email: savedEmail }));
+      setRememberMe(true);
+    }
 
     const checkSession = async () => {
       try {
@@ -103,11 +110,19 @@ export default function LoginForm() {
     setError("");
     setIsSubmitting(true);
 
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      email: String(formData.get("email") || "").trim(),
+      password: String(formData.get("password") || ""),
+      rememberMe: rememberMe,
+    };
+    setForm(payload);
+
     try {
       const response = await apiFetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -115,6 +130,12 @@ export default function LoginForm() {
       if (!response.ok) {
         setError(data.error || "Invalid email or password");
         return;
+      }
+
+      if (rememberMe) {
+        window.localStorage.setItem(SAVED_LOGIN_EMAIL_KEY, payload.email);
+      } else {
+        window.localStorage.removeItem(SAVED_LOGIN_EMAIL_KEY);
       }
 
       // Show success state briefly before redirect
@@ -172,7 +193,7 @@ export default function LoginForm() {
           </div>
         </motion.div>
 
-        <div className="relative overflow-hidden rounded-2xl bg-white/95 backdrop-blur-xl shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/80 backdrop-blur-xl shadow-2xl">
           {/* Header Gradient */}
           <div className="absolute top-0 h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
           
@@ -182,7 +203,7 @@ export default function LoginForm() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Welcome Back
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-slate-400">
                 Sign in to access your employee dashboard
               </p>
             </motion.div>
@@ -192,21 +213,23 @@ export default function LoginForm() {
               variants={itemVariants}
               className="mt-8 space-y-5" 
               onSubmit={onSubmit}
+              autoComplete="on"
             >
               {/* Email Field */}
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block text-sm font-medium text-slate-200">
                   Email Address
                 </label>
                 <div className="relative">
                   <input
                     type="email"
                     name="email"
+                    id="email"
                     required
-                    autoComplete="email"
+                    autoComplete="username"
                     value={form.email}
                     onChange={onChange}
-                    className="w-full rounded-lg border border-slate-300 py-2.5 pl-10 pr-4 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                    className="w-full rounded-xl border border-slate-700 bg-slate-900/80 py-2.5 pl-10 pr-4 text-slate-100 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="you@company.com"
                   />
                   <EnvelopeIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
@@ -215,25 +238,26 @@ export default function LoginForm() {
 
               {/* Password Field */}
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block text-sm font-medium text-slate-200">
                   Password
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
+                    id="password"
                     required
                     autoComplete="current-password"
                     value={form.password}
                     onChange={onChange}
-                    className="w-full rounded-lg border border-slate-300 py-2.5 pl-10 pr-10 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                  />
+                    className="w-full rounded-xl border border-slate-700 bg-slate-900/80 py-2.5 pl-10 pr-10 text-slate-100 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                    placeholder="........"
+                    />
                   <KeyIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
                   >
                     {showPassword ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -244,10 +268,10 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              {/* Remember Me & Forgot Password */}
+              {/* Remember Me */}
               <motion.div 
                 variants={itemVariants}
-                className="flex items-center justify-between"
+                className="flex items-center"
               >
                 <label className="flex items-center gap-2">
                   <input
@@ -256,16 +280,8 @@ export default function LoginForm() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-slate-600">Remember me</span>
+                  <span className="text-sm text-slate-300">Remember me</span>
                 </label>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot password?
-                </motion.button>
               </motion.div>
 
               {/* Error Message */}
@@ -325,21 +341,23 @@ export default function LoginForm() {
             {/* Footer */}
             <motion.div 
               variants={itemVariants}
-              className="mt-6 text-center text-sm text-slate-500"
+              className="mt-6 text-center text-sm text-slate-400"
             >
               <p>Demo credentials:</p>
               <div className="mt-2 flex flex-wrap justify-center gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">
-                  boss@company.com
+                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
+                  boss@company.local
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">
-                  manager@company.com
+                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
+                  manager@company.local
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">
-                  employee@company.com
+                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
+                  employee01@company.local
                 </span>
               </div>
-              <p className="mt-2 text-xs">Password: any password (min 8 chars)</p>
+              <p className="mt-2 text-xs">
+                Password: use the seeded password from <code>.env.local</code>
+              </p>
             </motion.div>
           </div>
         </div>
@@ -349,7 +367,7 @@ export default function LoginForm() {
           variants={itemVariants}
           className="mt-4 text-center text-sm text-white/60"
         >
-          Â© 2024 Employee Management System. All rights reserved.
+          Copyright 2024 Employee Management System. All rights reserved.
         </motion.div>
       </motion.div>
     </motion.main>

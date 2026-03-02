@@ -172,7 +172,13 @@ export async function proxy(request) {
       return jsonForbidden("Authentication required", 401);
     }
 
-    if (request.method === "POST" && role !== ROLES.MANAGER) {
+    const isTaskCommentCreate = /^\/api\/tasks\/[^/]+\/comments$/.test(pathname);
+
+    if (
+      request.method === "POST" &&
+      !isTaskCommentCreate &&
+      ![ROLES.MANAGER, ROLES.BOSS].includes(role)
+    ) {
       return jsonForbidden("Forbidden", 403);
     }
 

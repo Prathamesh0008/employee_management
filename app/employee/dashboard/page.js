@@ -19,6 +19,7 @@ export default async function EmployeeDashboardPage() {
   const tasks = await Task.find({ assignedTo: user.id })
     .sort({ taskDate: -1, createdAt: -1 })
     .populate("assignedBy", "name email role")
+    .populate("comments.author", "name email role")
     .lean();
 
   return <EmployeeTasksPanel initialTasks={toPlain(tasks)} />;

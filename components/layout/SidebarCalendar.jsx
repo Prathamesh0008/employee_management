@@ -46,7 +46,7 @@ export default function SidebarCalendar() {
   }, [currentMonth]);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+    <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)]">
       <div className="mb-2 flex items-center justify-between">
         <button
           type="button"
@@ -55,12 +55,12 @@ export default function SidebarCalendar() {
               (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
             )
           }
-          className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate-600 hover:bg-white"
+          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-cyan-500/40 hover:bg-slate-900"
           aria-label="Previous month"
         >
           Prev
         </button>
-        <p className="text-xs font-semibold text-slate-700">{monthLabel}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">{monthLabel}</p>
         <button
           type="button"
           onClick={() =>
@@ -68,7 +68,7 @@ export default function SidebarCalendar() {
               (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
             )
           }
-          className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate-600 hover:bg-white"
+          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-cyan-500/40 hover:bg-slate-900"
           aria-label="Next month"
         >
           Next
@@ -80,7 +80,7 @@ export default function SidebarCalendar() {
           <p
             key={day}
             className={`text-center text-[10px] font-semibold ${
-              idx === 0 || idx === 6 ? "text-red-500" : "text-slate-500"
+              idx === 0 || idx === 6 ? "text-rose-400" : "text-slate-500"
             }`}
           >
             {day}
@@ -99,12 +99,12 @@ export default function SidebarCalendar() {
               key={date.toISOString()}
               className={`flex h-6 w-6 items-center justify-center rounded text-[11px] ${
                 isToday && isWeekend
-                  ? "bg-red-500 font-semibold text-white ring-2 ring-blue-500"
+                  ? "bg-rose-500 font-semibold text-white ring-2 ring-cyan-400"
                   : isToday
-                    ? "bg-indigo-600 font-semibold text-white"
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-500 font-semibold text-white"
                     : isWeekend
-                      ? "bg-red-100 font-semibold text-red-600"
-                      : "text-slate-700 hover:bg-white"
+                      ? "bg-rose-500/10 font-semibold text-rose-300"
+                      : "text-slate-300 hover:bg-slate-800"
               }`}
             >
               {date.getDate()}

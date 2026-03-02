@@ -55,6 +55,7 @@ export async function GET(request) {
     .limit(limit)
     .populate("assignedTo", "name email role")
     .populate("assignedBy", "name email role")
+    .populate("comments.author", "name email role")
     .lean();
 
   return NextResponse.json(
@@ -72,7 +73,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const auth = await requireApiAuth(request, [ROLES.MANAGER]);
+  const auth = await requireApiAuth(request, [ROLES.MANAGER, ROLES.BOSS]);
 
   if (auth.error) {
     return auth.error;
@@ -107,7 +108,13 @@ export async function POST(request) {
     return jsonError("Invalid task payload", 422, validation.error.flatten());
   }
 
-  const { title, description, assignedTo, priority, taskDate: taskDateInput } = validation.data;
+  const {
+    title,
+    description,
+    assignedTo,
+    priority,
+    taskDate: taskDateInput,
+  } = validation.data;
   const taskDate = parseDateOnly(taskDateInput);
 
   if (!taskDate) {
@@ -139,6 +146,7 @@ export async function POST(request) {
   const populatedTask = await Task.findById(task._id)
     .populate("assignedTo", "name email role")
     .populate("assignedBy", "name email role")
+    .populate("comments.author", "name email role")
     .lean();
 
   await recordAuditLog({
@@ -153,10 +161,18 @@ export async function POST(request) {
   await notifyUser({
     userId: assignedTo,
     email: employee.email,
-    title: "New Task Assigned",
-    message: `${auth.user.name} assigned you a task: ${title}`,
-    type: "task-assigned",
-    meta: { taskId: String(task._id), taskDate },
+    title: priority === "high" ? "High Priority Task Assigned" : "New Task Assigned",
+    message:
+      priority === "high"
+        ? `${auth.user.name} assigned you a high priority task: ${title}`
+        : `${auth.user.name} assigned you a task: ${title}`,
+    type: priority === "high" ? "task-assigned-high-priority" : "task-assigned",
+    meta: {
+      taskId: String(task._id),
+      taskDate,
+      priority,
+      assignedByName: auth.user.name,
+    },
     sendMail: true,
   });
 

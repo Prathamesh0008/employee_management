@@ -16,6 +16,7 @@ import User from "@/models/User";
 const loginSchema = z.object({
   email: z.string().trim().email(),
   password: z.string().min(8).max(200),
+  rememberMe: z.boolean().optional().default(false),
 });
 
 export async function POST(request) {
@@ -38,13 +39,14 @@ export async function POST(request) {
   const validation = loginSchema.safeParse({
     email: normalizeText(parsed.data.email).toLowerCase(),
     password: normalizeText(parsed.data.password),
+    rememberMe: Boolean(parsed.data.rememberMe),
   });
 
   if (!validation.success) {
     return jsonError("Invalid login payload", 422, validation.error.flatten());
   }
 
-  const { email, password } = validation.data;
+  const { email, password, rememberMe } = validation.data;
 
   await connectDB();
 
@@ -60,7 +62,7 @@ export async function POST(request) {
     return jsonError("Invalid email or password", 401);
   }
 
-  const token = await signAuthToken(user);
+  const token = await signAuthToken(user, { rememberMe });
 
   const response = NextResponse.json(
     {
@@ -75,7 +77,7 @@ export async function POST(request) {
     { status: 200 },
   );
 
-  response.cookies.set(AUTH_COOKIE_NAME, token, authCookieOptions);
+  response.cookies.set(AUTH_COOKIE_NAME, token, authCookieOptions({ rememberMe }));
   setCsrfCookie(response, createCsrfToken());
 
   return response;
