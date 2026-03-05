@@ -11,36 +11,19 @@ import {
   PlayIcon,
   SparklesIcon,
   StopIcon,
-  SunIcon,
-  MoonIcon,
+  TruckIcon,
 } from "@heroicons/react/24/outline";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const AUTO_REFRESH_MS = 30000;
 const BREAK_TYPES = [
   {
-    key: "morning",
-    label: "Morning Break",
-    allowedMinutes: 15,
-    icon: SunIcon,
-    badge: "bg-amber-500/15 text-amber-300",
-    progress: "bg-amber-500",
-  },
-  {
-    key: "lunch",
-    label: "Lunch Break",
+    key: "break",
+    label: "Break",
     allowedMinutes: 30,
     icon: BeakerIcon,
-    badge: "bg-orange-500/15 text-orange-300",
-    progress: "bg-orange-500",
-  },
-  {
-    key: "afternoon",
-    label: "Afternoon Break",
-    allowedMinutes: 15,
-    icon: MoonIcon,
-    badge: "bg-indigo-500/15 text-indigo-300",
-    progress: "bg-indigo-500",
+    badge: "bg-cyan-500/15 text-cyan-300",
+    progress: "bg-cyan-500",
   },
 ];
 
@@ -139,6 +122,8 @@ export default function EmployeeDashboardAttendanceSection() {
   const [actionLoading, setActionLoading] = useState("");
   const [error, setError] = useState("");
   const [tick, setTick] = useState(Date.now());
+  const [drivingMode, setDrivingMode] = useState(false);
+  const [drivingModeLoading, setDrivingModeLoading] = useState(false);
 
   const loadDashboardAttendance = useCallback(async ({ silent = false } = {}) => {
     if (!silent) {
@@ -177,6 +162,7 @@ export default function EmployeeDashboardAttendanceSection() {
           gender: meData.user.gender || "",
           weeklyOffDays: meData.user.weeklyOffDays || [0],
         });
+        setDrivingMode(Boolean(meData.user.drivingMode));
       }
     } catch (loadError) {
       setError(loadError.message || "Unable to load dashboard attendance");
@@ -265,6 +251,41 @@ export default function EmployeeDashboardAttendanceSection() {
       return acc;
     }, {});
   }, [tick, todayBreaks]);
+
+  const completedBreakSessions = useMemo(
+    () => todayBreaks.filter((item) => item.type === "break" && item.status === "completed").length,
+    [todayBreaks],
+  );
+
+  const breakSummary = breakUsageByType.break || {
+    usedMinutes: 0,
+    progress: 0,
+    overLimit: false,
+    remainingSeconds: 30 * 60,
+    overrunSeconds: 0,
+    isActive: false,
+  };
+
+  const toggleDrivingMode = async () => {
+    setDrivingModeLoading(true);
+    setError("");
+    try {
+      const response = await apiFetch("/api/auth/me/driving-mode", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ drivingMode: !drivingMode }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to toggle driving mode");
+      }
+      setDrivingMode(Boolean(data.drivingMode));
+    } catch (actionError) {
+      setError(actionError.message || "Unable to toggle driving mode");
+    } finally {
+      setDrivingModeLoading(false);
+    }
+  };
 
   const runAction = async (name, endpoint, body = {}) => {
     setActionLoading(name);
@@ -362,7 +383,7 @@ export default function EmployeeDashboardAttendanceSection() {
       label: "Status",
       value: todayAttendance?.status || "not-started",
       subValue: activeBreak
-        ? `${activeBreak.type} break active`
+        ? "Break active"
         : todayAttendance?.isLate
           ? `${todayAttendance?.lateMinutes || 0} mins late`
           : "On time",
@@ -437,130 +458,191 @@ export default function EmployeeDashboardAttendanceSection() {
         })}
       </div>
 
-      <div className="mt-6 rounded-[24px] border border-slate-800 bg-slate-900/70 p-5">
-        <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 p-3 shadow-lg">
-            <SparklesIcon className="h-5 w-5 text-white" />
+      <div className="mt-6 rounded-[24px] border border-slate-800 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.10),transparent_50%),linear-gradient(180deg,rgba(15,23,42,0.85)_0%,rgba(2,6,23,0.85)_100%)] p-5">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+              <SparklesIcon className="h-5 w-5 text-cyan-300" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-100">Today&apos;s Actions</h3>
+              <p className="text-sm text-slate-400">Manage break session and driving mode</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-100">Today&apos;s Actions</h3>
-            <p className="text-sm text-slate-400">Manage your breaks</p>
-          </div>
+          <p className="text-xs font-medium text-slate-500">Only one active break at a time</p>
         </div>
 
-        <div className="mt-6">
-          <div className="flex items-center justify-between gap-3">
-            <h4 className="text-sm font-semibold text-slate-300">Break Sessions</h4>
-            <p className="text-xs text-slate-500">Only one active break at a time</p>
-          </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
+          {BREAK_TYPES.map((breakType) => {
+            const activeForType = todayBreaks.find(
+              (item) => item.type === breakType.key && item.status === "active",
+            );
+            const completedEntries = todayBreaks.filter(
+              (item) => item.type === breakType.key && item.status === "completed",
+            );
+            const usage = breakUsageByType[breakType.key] || {
+              usedMinutes: 0,
+              progress: 0,
+              overLimit: false,
+              remainingSeconds: breakType.allowedMinutes * 60,
+              overrunSeconds: 0,
+              isActive: false,
+            };
+            const Icon = breakType.icon;
 
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            {BREAK_TYPES.map((breakType) => {
-              const activeForType = todayBreaks.find(
-                (item) => item.type === breakType.key && item.status === "active",
-              );
-              const completedForType = todayBreaks.find(
-                (item) => item.type === breakType.key && item.status === "completed",
-              );
-              const usage = breakUsageByType[breakType.key] || {
-                usedMinutes: 0,
-                progress: 0,
-                overLimit: false,
-                remainingSeconds: breakType.allowedMinutes * 60,
-                overrunSeconds: 0,
-                isActive: false,
-              };
-              const Icon = breakType.icon;
+            return (
+              <article
+                key={breakType.key}
+                className="rounded-2xl border border-slate-800 bg-slate-950/75 p-5"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className={`inline-flex rounded-2xl p-3 ${breakType.badge}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                      usage.isActive
+                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-300"
+                        : "border-slate-700 bg-slate-900 text-slate-400"
+                    }`}
+                  >
+                    {usage.isActive ? "Active" : "Idle"}
+                  </span>
+                </div>
 
-              return (
-                <article
-                  key={breakType.key}
-                  className="rounded-[22px] border border-slate-800 bg-slate-950/80 p-4 shadow-sm ring-1 ring-slate-800/70"
+                <h5 className="mt-4 text-xl font-semibold text-slate-100">{breakType.label}</h5>
+                <p className="mt-1 text-sm text-slate-400">
+                  {activeForType
+                    ? `Started at ${formatTime(activeForType.startTime)}`
+                    : completedEntries.length > 0
+                      ? `${completedEntries.length} sessions completed today`
+                      : "Ready to start"}
+                </p>
+
+                <div className="mt-5">
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="font-medium text-slate-400">Progress</span>
+                    <span className={usage.overLimit ? "font-bold text-rose-400" : "font-bold text-slate-200"}>
+                      {usage.usedMinutes}/{breakType.allowedMinutes} min
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                    <div
+                      className={`h-full transition-[width] duration-300 ${usage.overLimit ? "bg-rose-500" : breakType.progress}`}
+                      style={{ width: `${usage.progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <p className={`mt-4 text-sm font-mono font-semibold ${usage.overLimit ? "text-rose-400" : "text-slate-200"}`}>
+                  {usage.isActive
+                    ? usage.overLimit
+                      ? `Over by ${formatTimer(usage.overrunSeconds)}`
+                      : `${formatTimer(usage.remainingSeconds)} remaining`
+                    : `${formatTimer(usage.remainingSeconds)} available`}
+                </p>
+
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    disabled={
+                      loading ||
+                      !shiftStarted ||
+                      shiftEnded ||
+                      Boolean(activeBreak) ||
+                      Boolean(actionLoading)
+                    }
+                    onClick={() =>
+                      void runAction(`start-${breakType.key}`, "/api/breaks/start", { type: breakType.key })
+                    }
+                    className="rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {actionLoading === `start-${breakType.key}` ? (
+                      <ArrowPathIcon className="mx-auto h-4 w-4 animate-spin" />
+                    ) : (
+                      "Start Break"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={loading || !activeForType || Boolean(actionLoading)}
+                    onClick={() =>
+                      void runAction(`end-${breakType.key}`, "/api/breaks/end", { type: breakType.key })
+                    }
+                    className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-slate-600 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {actionLoading === `end-${breakType.key}` ? (
+                      <ArrowPathIcon className="mx-auto h-4 w-4 animate-spin" />
+                    ) : (
+                      "End Break"
+                    )}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+
+          <aside className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+            <h4 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Quick Controls</h4>
+            <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <TruckIcon className="h-4 w-4 text-cyan-300" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-100">Driving Mode</p>
+                    <p className="text-xs text-slate-400">{drivingMode ? "On" : "Off"}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={drivingMode}
+                  onClick={() => void toggleDrivingMode()}
+                  disabled={drivingModeLoading}
+                  className={`relative inline-flex h-10 w-24 items-center rounded-full border-2 transition ${
+                    drivingMode
+                      ? "border-emerald-300 bg-[#19d21f]"
+                      : "border-rose-300 bg-[#ff1a1a]"
+                  } disabled:opacity-50`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className={`inline-flex rounded-2xl p-3 ${breakType.badge}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    {usage.isActive ? (
-                      <span className="rounded-full bg-blue-500/15 px-2.5 py-1 text-xs font-semibold text-blue-300">
-                        Active
-                      </span>
-                    ) : null}
-                  </div>
+                  <span
+                    className={`absolute text-[11px] font-bold tracking-wide text-white ${
+                      drivingMode ? "left-4" : "right-4"
+                    }`}
+                  >
+                    {drivingMode ? "ON" : "OFF"}
+                  </span>
+                  <span className={`absolute inset-y-0 left-0 right-0 z-10 flex items-center px-1 ${drivingMode ? "justify-end" : "justify-start"}`}>
+                    <span className="inline-block h-8 w-8 rounded-full border border-slate-300 bg-white transition-all duration-200" />
+                  </span>
+                </button>
+              </div>
+              <p className="mt-2 text-xs leading-5 text-slate-400">
+                {drivingModeLoading
+                  ? "Updating driving mode..."
+                  : "When enabled, your profile is marked as currently driving for live status visibility."}
+              </p>
+            </div>
 
-                  <h5 className="mt-4 text-xl font-semibold text-slate-100">{breakType.label}</h5>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {activeForType
-                      ? `Started at ${formatTime(activeForType.startTime)}`
-                      : completedForType
-                        ? `Completed (${completedForType.durationMinutes} mins)`
-                        : "Ready to start"}
-                  </p>
-
-                  <div className="mt-5">
-                    <div className="mb-2 flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-400">Progress</span>
-                      <span className={usage.overLimit ? "font-bold text-rose-400" : "font-bold text-slate-200"}>
-                        {usage.usedMinutes}/{breakType.allowedMinutes} min
-                      </span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-800">
-                      <div
-                        className={`h-full ${usage.overLimit ? "bg-rose-500" : breakType.progress}`}
-                        style={{ width: `${usage.progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {usage.isActive ? (
-                    <p className={`mt-4 text-center text-sm font-mono font-semibold ${usage.overLimit ? "text-rose-400" : "text-slate-200"}`}>
-                      {usage.overLimit
-                        ? `Over by ${formatTimer(usage.overrunSeconds)}`
-                        : `${formatTimer(usage.remainingSeconds)} remaining`}
-                    </p>
-                  ) : null}
-
-                  <div className="mt-4 flex gap-2">
-                    <button
-                      type="button"
-                      disabled={
-                        loading ||
-                        !shiftStarted ||
-                        shiftEnded ||
-                        Boolean(activeBreak) ||
-                        Boolean(completedForType) ||
-                        Boolean(actionLoading)
-                      }
-                      onClick={() =>
-                        void runAction(`start-${breakType.key}`, "/api/breaks/start", { type: breakType.key })
-                      }
-                      className="flex-1 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-600 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {actionLoading === `start-${breakType.key}` ? (
-                        <ArrowPathIcon className="mx-auto h-4 w-4 animate-spin" />
-                      ) : (
-                        "Start"
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={loading || !activeForType || Boolean(actionLoading)}
-                      onClick={() =>
-                        void runAction(`end-${breakType.key}`, "/api/breaks/end", { type: breakType.key })
-                      }
-                      className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-600 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {actionLoading === `end-${breakType.key}` ? (
-                        <ArrowPathIcon className="mx-auto h-4 w-4 animate-spin" />
-                      ) : (
-                        "End"
-                      )}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+            <div className="mt-4 space-y-2 rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Completed Sessions</span>
+                <span className="font-semibold text-slate-100">{completedBreakSessions}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Break Status</span>
+                <span className={`font-semibold ${breakSummary.isActive ? "text-cyan-300" : "text-slate-200"}`}>
+                  {breakSummary.isActive ? "Active" : "Idle"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Used Today</span>
+                <span className={`font-semibold ${breakSummary.overLimit ? "text-rose-400" : "text-slate-100"}`}>
+                  {breakSummary.usedMinutes} min
+                </span>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </section>

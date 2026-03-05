@@ -71,6 +71,7 @@ export async function PATCH(request, { params }) {
 
   const now = new Date();
   const previousStatus = task.status;
+  let autoPausedTask = null;
 
   if (status === "pending") {
     task.startedAt = null;
@@ -79,6 +80,66 @@ export async function PATCH(request, { params }) {
   }
 
   if (status === "in-progress") {
+    const activeTask = await Task.findOne({
+      assignedTo: auth.user._id,
+      status: "in-progress",
+      _id: { $ne: task._id },
+    }).populate("assignedBy", "name email role");
+
+    if (activeTask) {
+      if (task.priority !== "high") {
+        return jsonError(
+          `You already have "${activeTask.title}" in progress. Complete it before starting another task. Only high priority tasks can override.`,
+          409,
+          {
+            activeTaskId: String(activeTask._id),
+            activeTaskTitle: activeTask.title,
+          },
+        );
+      }
+
+      activeTask.status = "pending";
+      activeTask.startedAt = null;
+      activeTask.completedAt = null;
+      activeTask.completionMinutes = 0;
+      await activeTask.save();
+
+      autoPausedTask = {
+        id: String(activeTask._id),
+        title: activeTask.title,
+        reason: "auto-paused-for-high-priority",
+      };
+
+      await recordAuditLog({
+        actorId: auth.user._id,
+        action: "task.auto-pause-for-high-priority",
+        entityType: "task",
+        entityId: activeTask._id,
+        meta: {
+          replacedByTaskId: String(task._id),
+          replacedByTaskTitle: task.title,
+          replacedByPriority: task.priority,
+        },
+        request,
+      });
+
+      await notifyUser({
+        userId: activeTask.assignedBy?._id,
+        email: activeTask.assignedBy?.email,
+        title: "Task auto-paused for high priority",
+        message: `${auth.user.name} auto-paused "${activeTask.title}" to start high priority task "${task.title}".`,
+        type: "task-status-updated",
+        meta: {
+          taskId: String(activeTask._id),
+          status: "pending",
+          updatedByName: auth.user.name,
+          reason: "auto-paused-for-high-priority",
+          replacedByTaskId: String(task._id),
+          replacedByTaskTitle: task.title,
+        },
+      });
+    }
+
     if (!task.startedAt) {
       task.startedAt = now;
     }
@@ -118,6 +179,7 @@ export async function PATCH(request, { params }) {
       startedAt: task.startedAt,
       completedAt: task.completedAt,
       completionMinutes: task.completionMinutes,
+      autoPausedTask,
     },
     request,
   });
@@ -136,11 +198,19 @@ export async function PATCH(request, { params }) {
       startedAt: task.startedAt,
       completedAt: task.completedAt,
       completionMinutes: task.completionMinutes,
+      autoPausedTask,
     },
   });
 
   return NextResponse.json(
-    { message: "Task status updated", task: updatedTask },
+    {
+      message:
+        status === "in-progress" && autoPausedTask
+          ? `Task status updated. "${autoPausedTask.title}" was auto-paused for this high priority task.`
+          : "Task status updated",
+      task: updatedTask,
+      autoPausedTask,
+    },
     { status: 200 },
   );
 }

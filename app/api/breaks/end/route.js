@@ -15,7 +15,7 @@ import connectDB from "@/lib/db";
 import BreakLog from "@/models/BreakLog";
 
 const breakEndSchema = z.object({
-  type: z.enum(BREAK_TYPES),
+  type: z.enum(BREAK_TYPES).optional().default("break"),
 });
 
 export async function POST(request) {
@@ -42,8 +42,9 @@ export async function POST(request) {
     return parsed.error;
   }
 
+  const requestedType = normalizeText(parsed.data?.type || "break");
   const validation = breakEndSchema.safeParse({
-    type: normalizeText(parsed.data.type),
+    type: requestedType || "break",
   });
 
   if (!validation.success) {
@@ -60,12 +61,11 @@ export async function POST(request) {
   const activeBreak = await BreakLog.findOne({
     user: auth.user._id,
     date: today,
-    type,
     status: "active",
   });
 
   if (!activeBreak) {
-    return NextResponse.json({ error: "No active break found for this type" }, { status: 404 });
+    return NextResponse.json({ error: "No active break found" }, { status: 404 });
   }
 
   activeBreak.endTime = now;

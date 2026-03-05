@@ -16,7 +16,7 @@ import Attendance from "@/models/Attendance";
 import BreakLog from "@/models/BreakLog";
 
 const breakStartSchema = z.object({
-  type: z.enum(BREAK_TYPES),
+  type: z.enum(BREAK_TYPES).optional().default("break"),
 });
 
 export async function POST(request) {
@@ -43,8 +43,9 @@ export async function POST(request) {
     return parsed.error;
   }
 
+  const requestedType = normalizeText(parsed.data?.type || "break");
   const validation = breakStartSchema.safeParse({
-    type: normalizeText(parsed.data.type),
+    type: requestedType || "break",
   });
 
   if (!validation.success) {
@@ -76,20 +77,6 @@ export async function POST(request) {
 
   if (activeBreak) {
     return NextResponse.json({ error: "Another break is already active" }, { status: 409 });
-  }
-
-  const completedSameType = await BreakLog.findOne({
-    user: auth.user._id,
-    date: today,
-    type,
-    status: "completed",
-  }).lean();
-
-  if (completedSameType) {
-    return NextResponse.json(
-      { error: `You have already completed ${type} break for today` },
-      { status: 409 },
-    );
   }
 
   const breakLog = await BreakLog.create({

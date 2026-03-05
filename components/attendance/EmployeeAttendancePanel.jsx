@@ -10,17 +10,14 @@ import {
   PlayIcon,
   StopIcon,
   BeakerIcon,
-  SunIcon,
-  MoonIcon,
   SparklesIcon,
   ArrowPathIcon,
   BellAlertIcon,
+  TruckIcon,
 } from "@heroicons/react/24/outline";
 
 const BREAK_TYPES = [
-  { key: "morning", label: "Morning Break", allowedMinutes: 15, icon: SunIcon, color: "amber" },
-  { key: "lunch", label: "Lunch Break", allowedMinutes: 30, icon: BeakerIcon, color: "orange" },
-  { key: "afternoon", label: "Afternoon Break", allowedMinutes: 15, icon: MoonIcon, color: "indigo" },
+  { key: "break", label: "Break", allowedMinutes: 30, icon: BeakerIcon, color: "cyan" },
 ];
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -136,7 +133,7 @@ const floatingAnimation = {
   },
 };
 
-export default function EmployeeAttendancePanel() {
+export default function EmployeeAttendancePanel({ hideControls = false }) {
   const todayDate = new Date().toISOString().slice(0, 10);
 
   const [todayAttendance, setTodayAttendance] = useState(null);
@@ -147,6 +144,8 @@ export default function EmployeeAttendancePanel() {
   const [error, setError] = useState("");
   const [tick, setTick] = useState(Date.now());
   const [isLoaded, setIsLoaded] = useState(false);
+  const [drivingMode, setDrivingMode] = useState(false);
+  const [drivingModeLoading, setDrivingModeLoading] = useState(false);
   const [userShift, setUserShift] = useState({
     shiftType: "",
     gender: "",
@@ -189,6 +188,7 @@ export default function EmployeeAttendancePanel() {
           gender: meData.user.gender || "",
           weeklyOffDays: meData.user.weeklyOffDays || [0],
         });
+        setDrivingMode(Boolean(meData.user.drivingMode));
       }
     } catch (loadError) {
       setError(loadError.message || "Unable to load attendance data");
@@ -288,6 +288,25 @@ export default function EmployeeAttendancePanel() {
     }
   };
 
+  const toggleDrivingMode = async () => {
+    setDrivingModeLoading(true);
+    setError("");
+    try {
+      const response = await apiFetch("/api/auth/me/driving-mode", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ drivingMode: !drivingMode }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to toggle driving mode");
+      setDrivingMode(Boolean(data.drivingMode));
+    } catch (actionError) {
+      setError(actionError.message || "Unable to toggle driving mode");
+    } finally {
+      setDrivingModeLoading(false);
+    }
+  };
+
   const startShift = async () => {
     setActionLoading("shift-start");
     setError("");
@@ -335,69 +354,71 @@ export default function EmployeeAttendancePanel() {
       />
 
       <div className="relative space-y-4 sm:space-y-6">
-        {/* Header Section with Glass Effect */}
-        <motion.section 
-          variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5" />
-          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Attendance & Breaks
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Start/end your shift and monitor break limits in real-time
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
-              >
-                <CalendarIcon className="h-4 w-4 text-blue-500" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700">{formatDate(new Date())}</span>
-              </motion.div>
-              {shiftStarted && !shiftEnded && (
+        {!hideControls ? (
+          <>
+            {/* Header Section with Glass Effect */}
+            <motion.section 
+              variants={itemVariants}
+              className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5" />
+              <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Attendance & Breaks
+                  </h1>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Start/end your shift and monitor break limits in real-time
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
+                  >
+                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                    <span className="text-xs sm:text-sm font-medium text-slate-700">{formatDate(new Date())}</span>
+                  </motion.div>
+                  {shiftStarted && !shiftEnded && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                      <span className="text-xs font-medium text-emerald-700">Active Shift</span>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Error Message */}
+            <AnimatePresence>
+              {error && (
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="relative overflow-hidden rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 p-4 shadow-lg"
                 >
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-xs font-medium text-emerald-700">Active Shift</span>
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+                  <p className="relative text-sm font-medium text-white flex items-center gap-2">
+                    <XCircleIcon className="h-5 w-5" />
+                    {error}
+                  </p>
                 </motion.div>
               )}
-            </div>
-          </div>
-        </motion.section>
+            </AnimatePresence>
 
-        {/* Error Message */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="relative overflow-hidden rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 p-4 shadow-lg"
+            {/* Stats Cards - Modern Grid */}
+            <motion.section 
+              variants={itemVariants}
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
-              <p className="relative text-sm font-medium text-white flex items-center gap-2">
-                <XCircleIcon className="h-5 w-5" />
-                {error}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Stats Cards - Modern Grid */}
-        <motion.section 
-          variants={itemVariants}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
-        >
           {[
             { 
               icon: BriefcaseIcon, 
@@ -462,13 +483,13 @@ export default function EmployeeAttendancePanel() {
               <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-gradient-to-br from-slate-100 to-white opacity-50 blur-2xl" />
             </motion.div>
           ))}
-        </motion.section>
+            </motion.section>
 
-        {/* Today Actions Section - Modern Card */}
-        <motion.section 
-          variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
-        >
+            {/* Today Actions Section - Modern Card */}
+            <motion.section 
+              variants={itemVariants}
+              className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
+            >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50" />
           
           <div className="relative p-5 sm:p-6">
@@ -531,6 +552,25 @@ export default function EmployeeAttendancePanel() {
                   )}
                 </span>
               </motion.button>
+
+              <motion.button
+                type="button"
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={() => void toggleDrivingMode()}
+                disabled={drivingModeLoading}
+                className={`rounded-xl border px-6 py-3 text-sm font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  drivingMode
+                    ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-700"
+                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <span className="relative flex items-center justify-center gap-2">
+                  <TruckIcon className="h-4 w-4" />
+                  {drivingModeLoading ? "Updating..." : drivingMode ? "Driving Mode: On" : "Driving Mode: Off"}
+                </span>
+              </motion.button>
             </div>
 
             {/* Break Controls */}
@@ -545,7 +585,7 @@ export default function EmployeeAttendancePanel() {
                   const activeForType = todayBreaks.find(
                     (item) => item.type === breakType.key && item.status === "active",
                   );
-                  const completedForType = todayBreaks.find(
+                  const completedEntries = todayBreaks.filter(
                     (item) => item.type === breakType.key && item.status === "completed",
                   );
                   const usage = breakUsageByType[breakType.key] || {
@@ -597,8 +637,8 @@ export default function EmployeeAttendancePanel() {
                         <p className="text-xs text-slate-500 mb-3">
                           {activeForType
                             ? `Started at ${formatTime(activeForType.startTime)}`
-                            : completedForType
-                              ? `Completed (${completedForType.durationMinutes} mins)`
+                            : completedEntries.length > 0
+                              ? `${completedEntries.length} sessions completed`
                               : "Ready to start"}
                         </p>
 
@@ -651,7 +691,6 @@ export default function EmployeeAttendancePanel() {
                               !shiftStarted ||
                               shiftEnded ||
                               !!activeBreak ||
-                              !!completedForType ||
                               !!actionLoading
                             }
                             onClick={() =>
@@ -695,7 +734,9 @@ export default function EmployeeAttendancePanel() {
               </div>
             </div>
           </div>
-        </motion.section>
+            </motion.section>
+          </>
+        ) : null}
 
         {/* Attendance History Section */}
         <motion.section 

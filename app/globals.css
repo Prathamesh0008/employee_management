@@ -185,7 +185,7 @@ input:disabled,
 .dark-theme .shadow-lg,
 .dark-theme .shadow-xl,
 .dark-theme .shadow-2xl {
-  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45) !important;
+  box-shadow: none !important;
 }
 
 .dark-theme input:not([type="checkbox"]):not([type="radio"]),
@@ -231,6 +231,14 @@ input:disabled,
 
 .dark-theme ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.95);
+}
+
+/* Project-wide no-shadow preference */
+*,
+*::before,
+*::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 /* Tailwind safelist for dynamic utility classes used via template strings */

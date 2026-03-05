@@ -36,8 +36,6 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
   const [submittingComment, setSubmittingComment] = useState(false);
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => Date.now());
-  const labelTextClass = isDarkMode ? "text-slate-400" : "text-slate-500";
-  const mutedTextClass = isDarkMode ? "text-slate-300" : "text-slate-500";
 
   useEffect(() => {
     setNow(Date.now());
@@ -116,7 +114,9 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
 
             <div className="space-y-5 px-5 py-4">
               <div>
-                <p className={`text-xs font-medium uppercase tracking-wide ${labelTextClass}`}>
+                <p className={`text-xs font-medium uppercase tracking-wide ${
+                  isDarkMode ? "text-slate-500" : "text-slate-500"
+                }`}>
                   Title
                 </p>
                 <p className={`mt-1 text-base font-semibold ${
@@ -127,7 +127,9 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
               </div>
 
               <div>
-                <p className={`text-xs font-medium uppercase tracking-wide ${labelTextClass}`}>
+                <p className={`text-xs font-medium uppercase tracking-wide ${
+                  isDarkMode ? "text-slate-500" : "text-slate-500"
+                }`}>
                   Description
                 </p>
                 <p className={`mt-1 whitespace-pre-wrap break-words text-sm ${
@@ -141,7 +143,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                 <div className={`rounded-lg border p-3 ${
                   isDarkMode ? "border-slate-700 bg-slate-800/50" : "border-slate-200"
                 }`}>
-                  <p className={`text-xs ${labelTextClass}`}>Assigned By</p>
+                  <p className="text-xs text-slate-500">Assigned By</p>
                   <p className={`mt-1 text-sm font-medium ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
                     {task.assignedBy?.name || "Unknown"}
                   </p>
@@ -149,7 +151,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                 <div className={`rounded-lg border p-3 ${
                   isDarkMode ? "border-slate-700 bg-slate-800/50" : "border-slate-200"
                 }`}>
-                  <p className={`text-xs ${labelTextClass}`}>Due Date</p>
+                  <p className="text-xs text-slate-500">Due Date</p>
                   <p className={`mt-1 text-sm font-medium ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
                     {new Date(task.taskDate).toLocaleDateString()}
                   </p>
@@ -157,7 +159,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                 <div className={`rounded-lg border p-3 ${
                   isDarkMode ? "border-slate-700 bg-slate-800/50" : "border-slate-200"
                 }`}>
-                  <p className={`text-xs ${labelTextClass}`}>Priority</p>
+                  <p className="text-xs text-slate-500">Priority</p>
                   <span className={`mt-1 inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
                     PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.medium
                   }`}>
@@ -167,7 +169,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                 <div className={`rounded-lg border p-3 ${
                   isDarkMode ? "border-slate-700 bg-slate-800/50" : "border-slate-200"
                 }`}>
-                  <p className={`text-xs ${labelTextClass}`}>Status</p>
+                  <p className="text-xs text-slate-500">Status</p>
                   <span className={`mt-1 inline-flex rounded-full border px-2 py-1 text-xs font-medium ${
                     STATUS_STYLES[task.status] || STATUS_STYLES.pending
                   }`}>
@@ -184,7 +186,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                     <h4 className={`text-sm font-semibold ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>
                       Task Progress
                     </h4>
-                    <p className={`mt-1 text-xs ${mutedTextClass}`}>{getTaskTimingText(task, now)}</p>
+                    <p className="mt-1 text-xs text-slate-500">{getTaskTimingText(task, now)}</p>
                   </div>
                   <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                     isDarkMode ? "bg-slate-900 text-slate-300" : "bg-white text-slate-700"
@@ -204,7 +206,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                   <div className={`rounded-lg border p-3 ${
                     isDarkMode ? "border-slate-700 bg-slate-900/60" : "border-slate-200 bg-white"
                   }`}>
-                    <p className={`text-xs ${labelTextClass}`}>Started At</p>
+                    <p className="text-xs text-slate-500">Started At</p>
                     <p className={`mt-1 text-sm font-medium ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
                       {formatTaskDateTime(task.startedAt)}
                     </p>
@@ -212,7 +214,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                   <div className={`rounded-lg border p-3 ${
                     isDarkMode ? "border-slate-700 bg-slate-900/60" : "border-slate-200 bg-white"
                   }`}>
-                    <p className={`text-xs ${labelTextClass}`}>Completed At</p>
+                    <p className="text-xs text-slate-500">Completed At</p>
                     <p className={`mt-1 text-sm font-medium ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
                       {formatTaskDateTime(task.completedAt)}
                     </p>
@@ -242,7 +244,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                         <p className={`text-sm font-medium ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>
                           {entry.author?.name || "Team"}
                         </p>
-                        <p className={`text-xs ${mutedTextClass}`}>
+                        <p className="text-xs text-slate-500">
                           {entry.createdAt ? new Date(entry.createdAt).toLocaleString() : ""}
                         </p>
                       </div>
@@ -252,7 +254,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                     </div>
                   ))}
                   {(task.comments || []).length === 0 ? (
-                    <p className={`text-sm ${mutedTextClass}`}>No comments yet.</p>
+                    <p className="text-sm text-slate-500">No comments yet.</p>
                   ) : null}
                 </div>
 

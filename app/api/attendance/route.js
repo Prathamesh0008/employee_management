@@ -42,7 +42,7 @@ export async function GET(request) {
     .sort({ date: -1, shiftStart: -1, checkIn: -1 })
     .skip(skip)
     .limit(limit)
-    .populate("user", "name email role")
+    .populate("user", "name email role drivingMode")
     .lean();
 
   return NextResponse.json(

@@ -388,7 +388,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 p-3 sm:p-4 md:p-6"
+      className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(0,191,201,0.12),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.45),transparent_30%),linear-gradient(180deg,#050b16_0%,#0b1324_100%)] p-3 sm:p-4 md:p-6"
       initial="hidden"
       animate={isLoaded ? "visible" : "hidden"}
       variants={containerVariants}
@@ -397,27 +397,27 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl"
+        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-[#00bfc9]/10 blur-3xl"
       />
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-indigo-500/5 blur-3xl"
+        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-[#00bfc9]/5 blur-3xl"
       />
 
       <div className="relative space-y-4 sm:space-y-6">
         {/* Header Section with Glass Effect */}
         <motion.section 
           variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
+          className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-4 sm:p-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#00bfc9]/10 to-transparent" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-red-300">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-100">
                 {title}
               </h1>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-300">
                 In-app alerts for tasks, leaves, holidays and updates
               </p>
               {canBroadcast && (
@@ -432,27 +432,27 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => void handleTestSound()}
-                className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm"
+                className="flex items-center gap-2 rounded-full border border-[#00bfc9]/40 bg-[#05171c] px-3 py-1.5"
               >
-                <BellAlertIcon className="h-4 w-4 text-indigo-500" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700">Test sound</span>
+                <BellAlertIcon className="h-4 w-4 text-[#00bfc9]" />
+                <span className="text-xs sm:text-sm font-medium text-[#00bfc9]">Test sound</span>
               </motion.button>
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
+                className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5"
               >
-                <BellIcon className="h-4 w-4 text-blue-500" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700">
+                <BellIcon className="h-4 w-4 text-[#00bfc9]" />
+                <span className="text-xs sm:text-sm font-medium text-slate-200">
                   {unreadCount} unread
                 </span>
               </motion.div>
               {canBroadcast && (
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5"
+                  className="flex items-center gap-2 rounded-full border border-[#00bfc9]/30 bg-[#052129] px-3 py-1.5"
                 >
-                  <MegaphoneIcon className="h-4 w-4 text-indigo-600" />
-                  <span className="text-xs font-medium text-indigo-700">Broadcaster</span>
+                  <MegaphoneIcon className="h-4 w-4 text-[#00bfc9]" />
+                  <span className="text-xs font-medium text-[#00bfc9]">Broadcaster</span>
                 </motion.div>
               )}
             </div>
@@ -584,26 +584,26 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
         {/* Notifications Section */}
         <motion.section 
           variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
+          className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00bfc9]/7 to-transparent" />
           
           <div className="relative p-5 sm:p-6">
             {/* Header with Filters */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 p-2.5 shadow-lg">
+                <div className="rounded-xl bg-[#00bfc9] p-2.5">
                   <BellIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-800">Notifications</h2>
-                  <p className="text-xs sm:text-sm text-slate-500">Stay updated with latest alerts</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-100">Notifications</h2>
+                  <p className="text-xs sm:text-sm text-slate-400">Stay updated with latest alerts</p>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {/* Filter Tabs */}
-                <div className="flex rounded-lg border border-slate-200 p-1 bg-white">
+                <div className="flex rounded-lg border border-slate-700 p-1 bg-slate-950">
                   {[
                     { key: "all", label: "All", icon: InboxIcon },
                     { key: "unread", label: "Unread", icon: BellAlertIcon },
@@ -618,15 +618,15 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                         onClick={() => setFilter(tab.key)}
                         className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
                           filter === tab.key
-                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md"
-                            : "text-slate-600 hover:bg-slate-50"
+                            ? "bg-[#00bfc9] text-slate-950"
+                            : "text-slate-300 hover:bg-slate-800"
                         }`}
                       >
                         <Icon className="h-3 w-3" />
                         {tab.label}
                         {tab.key === "unread" && unreadCount > 0 && (
                           <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${
-                            filter === "unread" ? "bg-white/20" : "bg-blue-100 text-blue-600"
+                            filter === "unread" ? "bg-slate-900/20" : "bg-[#00bfc9]/20 text-[#00bfc9]"
                           }`}>
                             {unreadCount}
                           </span>
@@ -642,7 +642,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                   whileTap="tap"
                   type="button"
                   onClick={markAll}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  className="flex items-center justify-center gap-2 rounded-lg border border-[#00bfc9]/35 bg-[#05171c] px-4 py-2 text-sm font-medium text-[#00bfc9] hover:bg-[#0a2a31] transition-colors"
                 >
                   <CheckCircleIcon className="h-4 w-4" />
                   Mark all read
@@ -654,9 +654,9 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-blue-500 animate-spin" />
+                  <div className="h-12 w-12 rounded-full border-4 border-slate-700 border-t-[#00bfc9] animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-blue-500 animate-pulse" />
+                    <SparklesIcon className="h-5 w-5 text-[#00bfc9] animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -666,10 +666,10 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                 animate={{ opacity: 1, y: 0 }}
                 className="flex flex-col items-center justify-center py-12"
               >
-                <div className="rounded-full bg-slate-100 p-4 mb-3">
+                <div className="rounded-full bg-slate-800 p-4 mb-3">
                   <InboxIcon className="h-8 w-8 text-slate-400" />
                 </div>
-                <p className="text-sm font-medium text-slate-500">No notifications yet</p>
+                <p className="text-sm font-medium text-slate-300">No notifications yet</p>
                 <p className="text-xs text-slate-400 mt-1">
                   {filter === "all" 
                     ? "You're all caught up!" 
@@ -698,11 +698,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                       className={`group relative overflow-hidden rounded-xl border transition-all duration-200 ${
                         isHighPriorityTask
                           ? item.isRead
-                            ? "border-rose-200 bg-gradient-to-r from-rose-50/60 to-orange-50/40 hover:border-rose-300"
-                            : "border-rose-300 bg-gradient-to-r from-rose-50 to-orange-50 hover:border-rose-400"
+                            ? "border-rose-500/25 bg-rose-500/10 hover:border-rose-500/40"
+                            : "border-rose-500/40 bg-rose-500/15 hover:border-rose-500/50"
                           : item.isRead 
-                            ? "border-slate-200 bg-white hover:border-slate-300" 
-                            : "border-blue-200 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 hover:border-blue-300"
+                            ? "border-slate-700 bg-slate-900 hover:border-slate-600" 
+                            : "border-[#00bfc9]/35 bg-[#062029] hover:border-[#00bfc9]/55"
                       }`}
                     >
                       {/* Unread Indicator */}
@@ -713,7 +713,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                           className={`absolute left-0 top-0 bottom-0 w-1 ${
                             isHighPriorityTask
                               ? "bg-gradient-to-b from-rose-500 to-orange-500"
-                              : "bg-gradient-to-b from-blue-500 to-indigo-500"
+                              : "bg-[#00bfc9]"
                           }`}
                         />
                       )}
@@ -725,10 +725,10 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className={`text-sm font-semibold ${
                                 isHighPriorityTask
-                                  ? "text-rose-700"
+                                  ? "text-rose-300"
                                   : item.isRead
-                                    ? "text-slate-700"
-                                    : "text-slate-900"
+                                    ? "text-slate-200"
+                                    : "text-slate-100"
                               }`}>
                                 {item.title}
                               </h3>
@@ -736,7 +736,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                                 <motion.span
                                   initial={{ scale: 0 }}
                                   animate={{ scale: 1 }}
-                                  className="inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-semibold text-rose-700"
+                                  className="inline-flex items-center rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-semibold text-rose-300"
                                 >
                                   Urgent
                                 </motion.span>
@@ -747,8 +747,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                                   animate={{ scale: 1 }}
                                   className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
                                     isHighPriorityTask
-                                      ? "bg-rose-100 text-rose-700"
-                                      : "bg-blue-100 text-blue-700"
+                                      ? "bg-rose-500/20 text-rose-300"
+                                      : "bg-[#00bfc9]/20 text-[#00bfc9]"
                                   }`}
                                 >
                                   New
@@ -758,10 +758,10 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                             
                             <p className={`text-sm mb-2 ${
                               isHighPriorityTask
-                                ? "text-rose-700/90"
+                                ? "text-rose-200"
                                 : item.isRead
-                                  ? "text-slate-500"
-                                  : "text-slate-600"
+                                  ? "text-slate-400"
+                                  : "text-slate-300"
                             }`}>
                               {item.message}
                             </p>
@@ -791,8 +791,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                               onClick={() => void markOne(item._id, !item.isRead)}
                               className={`p-2 rounded-lg transition-colors ${
                                 item.isRead
-                                  ? "text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-                                  : "text-blue-600 hover:bg-blue-100"
+                                  ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                                  : "text-[#00bfc9] hover:bg-[#00bfc9]/15"
                               }`}
                               title={item.isRead ? "Mark as unread" : "Mark as read"}
                             >
@@ -827,15 +827,15 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 p-4 shadow-lg"
+              className="rounded-xl border border-[#00bfc9]/40 bg-[#062029] p-4"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-white/20 p-2">
                   <BellIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-white/80">Total</p>
-                  <p className="text-xl font-bold text-white">{items.length}</p>
+                  <p className="text-xs text-slate-300">Total</p>
+                  <p className="text-xl font-bold text-[#00bfc9]">{items.length}</p>
                 </div>
               </div>
             </motion.div>
@@ -843,15 +843,15 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 p-4 shadow-lg"
+              className="rounded-xl border border-amber-500/35 bg-amber-500/10 p-4"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-white/20 p-2">
                   <BellAlertIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-white/80">Unread</p>
-                  <p className="text-xl font-bold text-white">{unreadCount}</p>
+                  <p className="text-xs text-amber-200/80">Unread</p>
+                  <p className="text-xl font-bold text-amber-300">{unreadCount}</p>
                 </div>
               </div>
             </motion.div>
@@ -859,15 +859,15 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 p-4 shadow-lg"
+              className="rounded-xl border border-emerald-500/35 bg-emerald-500/10 p-4"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-white/20 p-2">
                   <CheckCircleIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-white/80">Read</p>
-                  <p className="text-xl font-bold text-white">{items.length - unreadCount}</p>
+                  <p className="text-xs text-emerald-200/80">Read</p>
+                  <p className="text-xl font-bold text-emerald-300">{items.length - unreadCount}</p>
                 </div>
               </div>
             </motion.div>
@@ -881,15 +881,15 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
+          background: #0b1324;
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
+          background: #1f3a40;
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
+          background: #00bfc9;
         }
       `}</style>
     </motion.div>

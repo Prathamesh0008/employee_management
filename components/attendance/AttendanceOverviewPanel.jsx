@@ -9,7 +9,7 @@ import {
   CheckCircleIcon,
   ClockIcon,
   SunIcon,
-  MoonIcon,
+  TruckIcon,
   BriefcaseIcon,
   SparklesIcon,
   ArrowPathIcon,
@@ -56,10 +56,20 @@ const BREAK_STATUS_STYLES = {
 };
 
 const BREAK_TYPE_STYLES = {
-  morning: "bg-amber-100 text-amber-700 border-amber-200",
-  lunch: "bg-orange-100 text-orange-700 border-orange-200",
-  afternoon: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  break: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
+
+function normalizeBreakType() {
+  return "break";
+}
+
+function formatBreakType() {
+  return "Break";
+}
+
+function isDrivingModeOn(row) {
+  return Boolean(row?.user?.drivingMode);
+}
 
 // Animation variants
 const containerVariants = {
@@ -235,9 +245,16 @@ export default function AttendanceOverviewPanel({ title }) {
     const totalOvertimeMinutes = attendance.reduce((acc, row) => acc + (row.overtimeMinutes || 0), 0);
     
     const breakTypes = breaks.reduce((acc, row) => {
-      acc[row.type] = (acc[row.type] || 0) + 1;
+      const type = normalizeBreakType(row.type);
+      acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {});
+    const drivingEmployeeIds = new Set();
+    [...attendance, ...breaks].forEach((row) => {
+      if (!isDrivingModeOn(row)) return;
+      const userId = row?.user?._id ? String(row.user._id) : "";
+      if (userId) drivingEmployeeIds.add(userId);
+    });
 
     return {
       totalAttendance: attendance.length,
@@ -250,6 +267,7 @@ export default function AttendanceOverviewPanel({ title }) {
       totalLateMinutes,
       totalOvertimeMinutes,
       breakTypes,
+      drivingEmployees: drivingEmployeeIds.size,
     };
   }, [attendance, breaks]);
 
@@ -315,6 +333,16 @@ export default function AttendanceOverviewPanel({ title }) {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                   </span>
                   <span className="text-xs font-medium text-amber-700">{summary.activeBreaks} Active Breaks</span>
+                </motion.div>
+              )}
+              {summary.drivingEmployees > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="flex items-center gap-2 rounded-full bg-cyan-50 px-3 py-1.5"
+                >
+                  <TruckIcon className="h-4 w-4 text-cyan-700" />
+                  <span className="text-xs font-medium text-cyan-700">{summary.drivingEmployees} Driving</span>
                 </motion.div>
               )}
             </div>
@@ -397,6 +425,10 @@ export default function AttendanceOverviewPanel({ title }) {
                   <SunIcon className="h-4 w-4 text-amber-600" />
                   <span className="text-xs font-medium text-amber-700">{summary.halfDay} Half Day</span>
                 </div>
+                <div className="flex items-center gap-1 rounded-full bg-cyan-50 px-3 py-1">
+                  <TruckIcon className="h-4 w-4 text-cyan-600" />
+                  <span className="text-xs font-medium text-cyan-700">{summary.drivingEmployees} Driving</span>
+                </div>
               </div>
             </div>
           </div>
@@ -473,9 +505,9 @@ export default function AttendanceOverviewPanel({ title }) {
         {/* Attendance List Section */}
         <motion.section 
           variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
+          className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-teal-50/50" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.10),transparent_45%)]" />
           
           <div className="relative p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -484,8 +516,8 @@ export default function AttendanceOverviewPanel({ title }) {
                   <UserGroupIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-800">Attendance List</h2>
-                  <p className="text-xs sm:text-sm text-slate-500">Employee attendance records for {formatDate(new Date(selectedDate))}</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-100">Attendance List</h2>
+                  <p className="text-xs sm:text-sm text-slate-400">Employee attendance records for {formatDate(new Date(selectedDate))}</p>
                 </div>
               </div>
 
@@ -494,7 +526,7 @@ export default function AttendanceOverviewPanel({ title }) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800 transition-colors"
                 >
                   <FunnelIcon className="h-4 w-4" />
                   Filter
@@ -513,7 +545,7 @@ export default function AttendanceOverviewPanel({ title }) {
                   <select
                     value={attendanceFilter}
                     onChange={(e) => setAttendanceFilter(e.target.value)}
-                    className="w-full sm:w-auto rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                    className="w-full sm:w-auto rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   >
                     <option value="all">All Status</option>
                     <option value="present">Present</option>
@@ -546,9 +578,9 @@ export default function AttendanceOverviewPanel({ title }) {
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ delay: index * 0.05 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 p-4 shadow-md hover:shadow-lg transition-all duration-300"
+                        className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-start justify-between mb-2">
@@ -557,8 +589,14 @@ export default function AttendanceOverviewPanel({ title }) {
                                 {row.user?.name?.charAt(0) || "U"}
                               </div>
                               <div>
-                                <p className="text-sm font-bold text-slate-800">{row.user?.name || "Unknown"}</p>
+                                <p className="text-sm font-bold text-slate-100">{row.user?.name || "Unknown"}</p>
                                 <p className="text-xs text-slate-400">{row.user?.email}</p>
+                                {isDrivingModeOn(row) ? (
+                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                                    <TruckIcon className="h-3 w-3" />
+                                    Driving
+                                  </span>
+                                ) : null}
                               </div>
                             </div>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[row.status] || STATUS_STYLES.present}`}>
@@ -567,16 +605,16 @@ export default function AttendanceOverviewPanel({ title }) {
                           </div>
                           
                           <div className="ml-10">
-                            <p className="text-xs text-slate-500 mb-2">{formatDate(row.date)}</p>
+                            <p className="text-xs text-slate-400 mb-2">{formatDate(row.date)}</p>
                             
                             <div className="grid grid-cols-2 gap-2 mb-2">
-                              <div className="bg-white/80 rounded-lg p-2">
+                              <div className="bg-slate-950/70 rounded-lg p-2 border border-slate-800">
                                 <p className="text-[10px] text-slate-400">Start</p>
-                                <p className="text-xs font-medium text-slate-700">{formatTime(row.shiftStart || row.checkIn)}</p>
+                                <p className="text-xs font-medium text-slate-200">{formatTime(row.shiftStart || row.checkIn)}</p>
                               </div>
-                              <div className="bg-white/80 rounded-lg p-2">
+                              <div className="bg-slate-950/70 rounded-lg p-2 border border-slate-800">
                                 <p className="text-[10px] text-slate-400">End</p>
-                                <p className="text-xs font-medium text-slate-700">{formatTime(row.shiftEnd || row.checkOut)}</p>
+                                <p className="text-xs font-medium text-slate-200">{formatTime(row.shiftEnd || row.checkOut)}</p>
                               </div>
                             </div>
                             
@@ -602,21 +640,22 @@ export default function AttendanceOverviewPanel({ title }) {
                 </div>
 
                 {/* Desktop Table View */}
-                <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-100">
+                <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-800">
                   <table className="min-w-full">
                     <thead>
-                      <tr className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-slate-200">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Shift Start</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Shift End</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Work Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Late</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Overtime</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                      <tr className="bg-slate-900 border-b border-slate-800">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Employee</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Shift Start</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Shift End</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Work Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Late</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Overtime</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Driving</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-800">
                       <AnimatePresence>
                         {filteredAttendance.map((row, index) => (
                           <motion.tr
@@ -625,7 +664,7 @@ export default function AttendanceOverviewPanel({ title }) {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ delay: index * 0.03 }}
-                            whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.5)" }}
+                            whileHover={{ backgroundColor: "rgba(30, 41, 59, 0.5)" }}
                             className="group transition-colors duration-200"
                           >
                             <td className="px-4 py-3">
@@ -634,14 +673,14 @@ export default function AttendanceOverviewPanel({ title }) {
                                   {row.user?.name?.charAt(0) || "U"}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-slate-800">{row.user?.name || "Unknown"}</p>
+                                  <p className="text-sm font-medium text-slate-100">{row.user?.name || "Unknown"}</p>
                                   <p className="text-xs text-slate-400">{row.user?.email || "-"}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{formatDate(row.date)}</td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{formatTime(row.shiftStart || row.checkIn)}</td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{formatTime(row.shiftEnd || row.checkOut)}</td>
+                            <td className="px-4 py-3 text-sm text-slate-300">{formatDate(row.date)}</td>
+                            <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.shiftStart || row.checkIn)}</td>
+                            <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.shiftEnd || row.checkOut)}</td>
                             <td className="px-4 py-3">
                               <span className="text-sm font-medium text-emerald-600">
                                 {formatMinutes(row.totalWorkMinutes)}
@@ -659,6 +698,16 @@ export default function AttendanceOverviewPanel({ title }) {
                                 <span className="text-sm font-medium text-blue-600">{row.overtimeMinutes} mins</span>
                               ) : (
                                 <span className="text-sm text-slate-400">-</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              {isDrivingModeOn(row) ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-semibold text-cyan-700">
+                                  <TruckIcon className="h-3.5 w-3.5" />
+                                  On
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">Off</span>
                               )}
                             </td>
                             <td className="px-4 py-3">
@@ -680,10 +729,10 @@ export default function AttendanceOverviewPanel({ title }) {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col items-center justify-center py-12"
                   >
-                    <div className="rounded-full bg-slate-100 p-4 mb-3">
+                    <div className="rounded-full bg-slate-800 p-4 mb-3">
                       <UserGroupIcon className="h-8 w-8 text-slate-400" />
                     </div>
-                    <p className="text-sm font-medium text-slate-500">No attendance records found</p>
+                    <p className="text-sm font-medium text-slate-300">No attendance records found</p>
                     <p className="text-xs text-slate-400 mt-1">Try selecting a different date</p>
                   </motion.div>
                 )}
@@ -695,9 +744,9 @@ export default function AttendanceOverviewPanel({ title }) {
         {/* Break Sessions Section */}
         <motion.section 
           variants={itemVariants}
-          className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
+          className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.12),transparent_48%)]" />
           
           <div className="relative p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -706,8 +755,8 @@ export default function AttendanceOverviewPanel({ title }) {
                   <BeakerIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-800">Break Sessions</h2>
-                  <p className="text-xs sm:text-sm text-slate-500">Employee break records for {formatDate(new Date(selectedDate))}</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-100">Break Sessions</h2>
+                  <p className="text-xs sm:text-sm text-slate-400">Employee break records for {formatDate(new Date(selectedDate))}</p>
                 </div>
               </div>
 
@@ -715,7 +764,7 @@ export default function AttendanceOverviewPanel({ title }) {
                 <select
                   value={breakFilter}
                   onChange={(e) => setBreakFilter(e.target.value)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 >
                   <option value="all">All Breaks</option>
                   <option value="active">Active</option>
@@ -746,9 +795,9 @@ export default function AttendanceOverviewPanel({ title }) {
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ delay: index * 0.05 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 p-4 shadow-md hover:shadow-lg transition-all duration-300"
+                        className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/8 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-start justify-between mb-2">
@@ -757,8 +806,14 @@ export default function AttendanceOverviewPanel({ title }) {
                                 {row.user?.name?.charAt(0) || "U"}
                               </div>
                               <div>
-                                <p className="text-sm font-bold text-slate-800">{row.user?.name || "Unknown"}</p>
+                                <p className="text-sm font-bold text-slate-100">{row.user?.name || "Unknown"}</p>
                                 <p className="text-xs text-slate-400">{row.user?.email}</p>
+                                {isDrivingModeOn(row) ? (
+                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                                    <TruckIcon className="h-3 w-3" />
+                                    Driving
+                                  </span>
+                                ) : null}
                               </div>
                             </div>
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${BREAK_STATUS_STYLES[row.status] || BREAK_STATUS_STYLES.completed}`}>
@@ -767,18 +822,18 @@ export default function AttendanceOverviewPanel({ title }) {
                           </div>
                           
                           <div className="ml-10">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mb-2 ${BREAK_TYPE_STYLES[row.type]}`}>
-                              {row.type} break
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mb-2 ${BREAK_TYPE_STYLES[normalizeBreakType(row.type)] || BREAK_TYPE_STYLES.break}`}>
+                              {formatBreakType(row.type)}
                             </span>
                             
                             <div className="grid grid-cols-2 gap-2 mb-2">
-                              <div className="bg-white/80 rounded-lg p-2">
+                              <div className="bg-slate-950/70 rounded-lg p-2 border border-slate-800">
                                 <p className="text-[10px] text-slate-400">Start</p>
-                                <p className="text-xs font-medium text-slate-700">{formatTime(row.startTime)}</p>
+                                <p className="text-xs font-medium text-slate-200">{formatTime(row.startTime)}</p>
                               </div>
-                              <div className="bg-white/80 rounded-lg p-2">
+                              <div className="bg-slate-950/70 rounded-lg p-2 border border-slate-800">
                                 <p className="text-[10px] text-slate-400">End</p>
-                                <p className="text-xs font-medium text-slate-700">{formatTime(row.endTime)}</p>
+                                <p className="text-xs font-medium text-slate-200">{formatTime(row.endTime)}</p>
                               </div>
                             </div>
                             
@@ -794,19 +849,20 @@ export default function AttendanceOverviewPanel({ title }) {
                 </div>
 
                 {/* Desktop Table View */}
-                <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-100">
+                <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-800">
                   <table className="min-w-full">
                     <thead>
-                      <tr className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-slate-200">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Start Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">End Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Duration</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                      <tr className="bg-slate-900 border-b border-slate-800">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Employee</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Start Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">End Time</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Duration</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Driving</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-800">
                       <AnimatePresence>
                         {filteredBreaks.map((row, index) => (
                           <motion.tr
@@ -815,7 +871,7 @@ export default function AttendanceOverviewPanel({ title }) {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ delay: index * 0.03 }}
-                            whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.5)" }}
+                            whileHover={{ backgroundColor: "rgba(30, 41, 59, 0.5)" }}
                             className="group transition-colors duration-200"
                           >
                             <td className="px-4 py-3">
@@ -824,20 +880,30 @@ export default function AttendanceOverviewPanel({ title }) {
                                   {row.user?.name?.charAt(0) || "U"}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-slate-800">{row.user?.name || "Unknown"}</p>
+                                  <p className="text-sm font-medium text-slate-100">{row.user?.name || "Unknown"}</p>
                                   <p className="text-xs text-slate-400">{row.user?.email || "-"}</p>
                                 </div>
                               </div>
                             </td>
                             <td className="px-4 py-3">
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${BREAK_TYPE_STYLES[row.type]}`}>
-                                {row.type}
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${BREAK_TYPE_STYLES[normalizeBreakType(row.type)] || BREAK_TYPE_STYLES.break}`}>
+                                {formatBreakType(row.type)}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{formatTime(row.startTime)}</td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{formatTime(row.endTime)}</td>
+                            <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.startTime)}</td>
+                            <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.endTime)}</td>
                             <td className="px-4 py-3">
                               <span className="text-sm font-medium text-purple-600">{formatMinutes(row.durationMinutes)}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {isDrivingModeOn(row) ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-semibold text-cyan-700">
+                                  <TruckIcon className="h-3.5 w-3.5" />
+                                  On
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">Off</span>
+                              )}
                             </td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${BREAK_STATUS_STYLES[row.status]}`}>
@@ -858,10 +924,10 @@ export default function AttendanceOverviewPanel({ title }) {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col items-center justify-center py-12"
                   >
-                    <div className="rounded-full bg-slate-100 p-4 mb-3">
+                    <div className="rounded-full bg-slate-800 p-4 mb-3">
                       <BeakerIcon className="h-8 w-8 text-slate-400" />
                     </div>
-                    <p className="text-sm font-medium text-slate-500">No break sessions found</p>
+                    <p className="text-sm font-medium text-slate-300">No break sessions found</p>
                     <p className="text-xs text-slate-400 mt-1">Try selecting a different date</p>
                   </motion.div>
                 )}

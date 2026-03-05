@@ -44,7 +44,7 @@ export async function GET(request) {
     .sort({ date: -1, startTime: -1 })
     .skip(skip)
     .limit(limit)
-    .populate("user", "name email role")
+    .populate("user", "name email role drivingMode")
     .lean();
 
   return NextResponse.json(

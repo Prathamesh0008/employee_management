@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChartBarIcon,
@@ -8,6 +8,8 @@ import {
   ClockIcon,
   EyeIcon,
   FunnelIcon,
+  MoonIcon,
+  SunIcon,
   ChevronDownIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
@@ -24,7 +26,6 @@ import {
 const STATUS_OPTIONS = ["pending", "in-progress", "completed"];
 const PRIORITY_OPTIONS = ["low", "medium", "high"];
 const AUTO_REFRESH_MS = 5000;
-const TASK_ALERT_THRESHOLD_MINUTES = 60;
 
 const STATUS_STYLES = {
   pending: "bg-amber-500/10 text-amber-500 border-amber-500/20",
@@ -53,20 +54,6 @@ function truncateWords(text, maxWords = 2, maxChars = 28) {
   const shortByWords = words.length > maxWords ? `${sliced}...` : sliced;
   if (shortByWords.length <= maxChars) return shortByWords;
   return `${shortByWords.slice(0, maxChars).trimEnd()}...`;
-}
-
-function getElapsedTaskMinutes(task, nowMs) {
-  if (!task?.startedAt || task?.status !== "in-progress") return 0;
-  const startedMs = new Date(task.startedAt).getTime();
-  if (Number.isNaN(startedMs)) return 0;
-  return Math.floor((nowMs - startedMs) / 60000);
-}
-
-function getTaskDateKey(value) {
-  if (!value) return "";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return parsed.toISOString().slice(0, 10);
 }
 
 const containerVariants = {
@@ -102,14 +89,12 @@ export default function EmployeeTasksPanel({ initialTasks }) {
   });
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const isDarkMode = true;
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [taskSearch, setTaskSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
   const [now, setNow] = useState(0);
-  const alertedOverdueTaskIdsRef = useRef(new Set());
 
   const loadTasks = useCallback(async ({ silent = false } = {}) => {
     try {
@@ -189,82 +174,25 @@ export default function EmployeeTasksPanel({ initialTasks }) {
     return tasks.filter((task) => task.priority === "high" && task.status !== "completed");
   }, [tasks]);
 
-  const overdueTasks = useMemo(() => {
-    return tasks.filter((task) => getElapsedTaskMinutes(task, now) >= TASK_ALERT_THRESHOLD_MINUTES);
-  }, [now, tasks]);
-
-  useEffect(() => {
-    const latestIds = new Set(overdueTasks.map((task) => String(task._id)));
-
-    alertedOverdueTaskIdsRef.current.forEach((taskId) => {
-      if (!latestIds.has(taskId)) {
-        alertedOverdueTaskIdsRef.current.delete(taskId);
-      }
-    });
-
-    if (typeof window === "undefined") return;
-
-    const newlyOverdueTasks = overdueTasks.filter(
-      (task) => !alertedOverdueTaskIdsRef.current.has(String(task._id)),
-    );
-
-    if (newlyOverdueTasks.length > 0) {
-      const firstTitle = newlyOverdueTasks[0]?.title || "Task";
-      const moreCount = newlyOverdueTasks.length - 1;
-      const suffix = moreCount > 0 ? ` and ${moreCount} more task(s)` : "";
-      window.alert(`Task time alert: "${firstTitle}"${suffix} exceeded 1 hour.`);
-
-      newlyOverdueTasks.forEach((task) => {
-        alertedOverdueTaskIdsRef.current.add(String(task._id));
-      });
-
-      void Promise.allSettled(
-        newlyOverdueTasks.map((task) =>
-          apiFetch(`/api/tasks/${task._id}/overdue-alert`, {
-            method: "POST",
-          }),
-        ),
-      );
-    }
-  }, [overdueTasks]);
-
-  const availableTaskDates = useMemo(() => {
-    const seen = new Set();
-    const dates = [];
-    for (const task of tasks) {
-      const dateKey = getTaskDateKey(task.taskDate);
-      if (!dateKey || seen.has(dateKey)) continue;
-      seen.add(dateKey);
-      dates.push(dateKey);
-    }
-    return dates.sort((a, b) => (a < b ? 1 : -1));
-  }, [tasks]);
-
   const filteredTasks = useMemo(() => {
     const searchValue = taskSearch.trim().toLowerCase();
 
     return tasks.filter((task) => {
       const matchesStatus = statusFilter === "all" || task.status === statusFilter;
       const matchesPriority = priorityFilter === "all" || task.priority === priorityFilter;
-      const matchesDate = dateFilter === "all" || getTaskDateKey(task.taskDate) === dateFilter;
       const matchesSearch =
         !searchValue ||
         [task.title, task.description, task.assignedBy?.name]
           .filter(Boolean)
           .some((value) => String(value).toLowerCase().includes(searchValue));
 
-      return matchesStatus && matchesPriority && matchesDate && matchesSearch;
+      return matchesStatus && matchesPriority && matchesSearch;
     });
-  }, [dateFilter, priorityFilter, statusFilter, taskSearch, tasks]);
+  }, [priorityFilter, statusFilter, taskSearch, tasks]);
 
   const activeFilterCount = useMemo(() => {
-    return [
-      statusFilter !== "all",
-      priorityFilter !== "all",
-      dateFilter !== "all",
-      taskSearch.trim() !== "",
-    ].filter(Boolean).length;
-  }, [dateFilter, priorityFilter, statusFilter, taskSearch]);
+    return [statusFilter !== "all", priorityFilter !== "all", taskSearch.trim() !== ""].filter(Boolean).length;
+  }, [priorityFilter, statusFilter, taskSearch]);
 
   const updateTask = useCallback(
     async (taskId) => {
@@ -343,6 +271,17 @@ export default function EmployeeTasksPanel({ initialTasks }) {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDarkMode((prev) => !prev)}
+              className={`rounded-full border p-2 transition ${
+                isDarkMode
+                  ? "border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              {isDarkMode ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+            </button>
             <div
               className={`rounded-xl border px-4 py-2 text-sm font-semibold ${
                 isDarkMode ? "border-blue-500/30 bg-blue-500/10 text-blue-300" : "border-blue-200 bg-blue-50 text-blue-700"
@@ -396,44 +335,18 @@ export default function EmployeeTasksPanel({ initialTasks }) {
         </motion.section>
       ) : null}
 
-      {overdueTasks.length > 0 ? (
-        <motion.section
-          variants={itemVariants}
-          className={`mb-8 rounded-2xl border p-5 ${isDarkMode ? "border-amber-500/35 bg-amber-500/10" : "border-amber-200 bg-amber-50"}`}
-        >
-          <div className="flex items-start gap-3">
-            <ExclamationTriangleIcon className={`mt-0.5 h-6 w-6 ${isDarkMode ? "text-amber-300" : "text-amber-600"}`} />
-            <div>
-              <h2 className={`text-lg font-semibold ${isDarkMode ? "text-amber-200" : "text-amber-700"}`}>
-                Time Alert
-              </h2>
-              <p className={`text-sm ${isDarkMode ? "text-amber-100/90" : "text-amber-700/80"}`}>
-                {overdueTasks.length} task{overdueTasks.length === 1 ? "" : "s"} exceeded 1 hour in progress.
-              </p>
-              <div className={`mt-2 flex flex-wrap gap-2 text-xs ${isDarkMode ? "text-amber-100/90" : "text-amber-700"}`}>
-                {overdueTasks.slice(0, 5).map((task) => (
-                  <span key={task._id} className={`rounded-full border px-2.5 py-1 ${isDarkMode ? "border-amber-400/35 bg-amber-500/10" : "border-amber-300 bg-amber-100"}`}>
-                    {task.title}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.section>
-      ) : null}
-
-      <motion.section variants={itemVariants} className="mb-6 grid grid-cols-2 gap-2 sm:mb-8 sm:gap-4 lg:grid-cols-4">
+      <motion.section variants={itemVariants} className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Total Tasks", value: counts.total, icon: ChartBarIcon, bar: 100, color: "blue" },
           { label: "Completed", value: counts.completed, icon: CheckCircleIcon, bar: completedProgress, color: "emerald" },
           { label: "In Progress", value: counts.pending, icon: ClockIcon, bar: pendingProgress, color: "amber" },
           { label: "Completion Rate", value: `${completionRate}%`, icon: FunnelIcon, bar: completionRate, color: "violet" },
         ].map((card) => (
-          <div key={card.label} className={`rounded-xl border p-3 sm:rounded-2xl sm:p-5 ${panelClasses}`}>
-            <card.icon className={`h-4 w-4 sm:h-6 sm:w-6 ${isDarkMode ? "text-slate-200" : "text-slate-700"}`} />
-            <p className={`mt-2 text-xs sm:mt-3 sm:text-sm ${labelTextClass}`}>{card.label}</p>
-            <p className={`mt-1 text-2xl font-bold sm:text-3xl ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>{card.value}</p>
-            <div className={`mt-2 h-1.5 w-full overflow-hidden rounded-full sm:mt-4 sm:h-2 ${isDarkMode ? "bg-slate-800" : "bg-slate-200"}`}>
+          <div key={card.label} className={`rounded-2xl border p-5 ${panelClasses}`}>
+            <card.icon className={`h-6 w-6 ${isDarkMode ? "text-slate-200" : "text-slate-700"}`} />
+            <p className={`mt-3 text-sm ${labelTextClass}`}>{card.label}</p>
+            <p className={`mt-1 text-3xl font-bold ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>{card.value}</p>
+            <div className={`mt-4 h-2 w-full overflow-hidden rounded-full ${isDarkMode ? "bg-slate-800" : "bg-slate-200"}`}>
               <div
                 className={`h-full rounded-full ${
                   card.color === "blue"
@@ -473,7 +386,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
               exit={{ opacity: 0, y: -10 }}
               className={`mb-6 rounded-xl border p-4 ${isDarkMode ? "border-slate-700 bg-slate-900" : "border-slate-200 bg-slate-50"}`}
             >
-              <div className="grid gap-3 md:grid-cols-5">
+              <div className="grid gap-3 md:grid-cols-4">
                 <div className="md:col-span-2">
                   <label className={`mb-1 block text-xs font-semibold uppercase tracking-wide ${labelTextClass}`}>Search</label>
                   <input
@@ -526,25 +439,6 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className={`mb-1 block text-xs font-semibold uppercase tracking-wide ${labelTextClass}`}>Date</label>
-                  <select
-                    value={dateFilter}
-                    onChange={(event) => setDateFilter(event.target.value)}
-                    className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-                      isDarkMode
-                        ? "border-slate-700 bg-slate-800 text-slate-200 focus:ring-blue-400/30"
-                        : "border-slate-300 bg-white text-slate-800 focus:ring-blue-200"
-                    }`}
-                  >
-                    <option value="all">All dates</option>
-                    {availableTaskDates.map((taskDate) => (
-                      <option key={taskDate} value={taskDate}>
-                        {new Date(taskDate).toLocaleDateString()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               <div className="mt-4 flex items-center justify-between gap-3">
@@ -557,7 +451,6 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                     setTaskSearch("");
                     setStatusFilter("all");
                     setPriorityFilter("all");
-                    setDateFilter("all");
                   }}
                   className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                     isDarkMode
@@ -595,7 +488,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                   >
                     {task.title}
                   </button>
-                  <span className={`inline-flex whitespace-nowrap rounded-full border px-2 py-1 text-xs font-medium ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.medium}`}>
+                  <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.medium}`}>
                     {task.priority}
                   </span>
                 </div>
@@ -722,20 +615,18 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                         View details
                       </button>
                       {shouldShowTaskProgress(task) ? (
-                        <div className="mt-3 w-full">
-                          <div className="mb-1.5 flex items-center justify-between text-xs">
+                        <div className={`mt-3 max-w-[260px] rounded-lg border p-3 ${isDarkMode ? "border-slate-700 bg-slate-950" : "border-slate-200 bg-slate-50"}`}>
+                          <div className="mb-2 flex items-center justify-between text-xs">
                             <span className={labelTextClass}>Progress</span>
-                            <span className={`font-semibold ${isDarkMode ? "text-slate-200" : "text-slate-700"}`}>
-                              {getTaskProgressPercent(task, now)}%
-                            </span>
+                            <span className={`font-semibold ${isDarkMode ? "text-slate-200" : "text-slate-700"}`}>{getTaskProgressPercent(task, now)}%</span>
                           </div>
-                          <div className={`h-2 w-full overflow-hidden rounded-full ${isDarkMode ? "bg-slate-800" : "bg-slate-200"}`}>
+                          <div className={`h-2 overflow-hidden rounded-full ${isDarkMode ? "bg-slate-800" : "bg-slate-200"}`}>
                             <div
                               className={`h-full rounded-full bg-gradient-to-r ${getTaskProgressClasses(task, now)}`}
                               style={{ width: `${getTaskProgressPercent(task, now)}%` }}
                             />
                           </div>
-                          <p className={`mt-1.5 text-xs ${labelTextClass}`}>{getTaskTimingText(task, now)}</p>
+                          <p className={`mt-2 text-xs ${labelTextClass}`}>{getTaskTimingText(task, now)}</p>
                         </div>
                       ) : null}
                     </td>
@@ -746,12 +637,12 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                       <p className="truncate">{new Date(task.taskDate).toLocaleDateString()}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex whitespace-nowrap rounded-full border px-2 py-1 text-xs font-medium ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.medium}`}>
+                      <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${PRIORITY_STYLES[task.priority] || PRIORITY_STYLES.medium}`}>
                         {task.priority}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex whitespace-nowrap rounded-full border px-2 py-1 text-xs font-medium ${STATUS_STYLES[task.status] || STATUS_STYLES.pending}`}>
+                      <span className={`inline-flex rounded-full border px-2 py-1 text-xs font-medium ${STATUS_STYLES[task.status] || STATUS_STYLES.pending}`}>
                         {formatStatusLabel(task.status)}
                       </span>
                     </td>
@@ -766,7 +657,7 @@ export default function EmployeeTasksPanel({ initialTasks }) {
                                 [task._id]: event.target.value,
                               }))
                             }
-                            className={`w-[7.5rem] appearance-none rounded-lg border px-2.5 py-2 pr-7 text-sm font-medium focus:outline-none focus:ring-2 ${
+                            className={`w-[8.5rem] appearance-none rounded-lg border px-2.5 py-2 pr-7 text-sm font-medium focus:outline-none focus:ring-2 ${
                               isDarkMode
                                 ? "border-slate-700 bg-slate-800 text-slate-200 focus:ring-blue-400/30"
                                 : "border-slate-300 bg-white text-slate-700 focus:ring-blue-200"

@@ -28,6 +28,7 @@ export async function GET(request) {
         employeeCode: user.employeeCode,
         shiftType: user.shiftType,
         weeklyOffDays: user.weeklyOffDays,
+        drivingMode: Boolean(user.drivingMode),
       },
       csrfToken,
     },

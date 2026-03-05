@@ -80,6 +80,11 @@ const UserSchema = new mongoose.Schema(
         message: "weeklyOffDays must contain integers between 0 and 6",
       },
     },
+    drivingMode: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
@@ -87,6 +92,10 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.index({ employeeCode: 1 }, { unique: true, sparse: true });
+
+if (process.env.NODE_ENV === "development" && mongoose.models.User) {
+  delete mongoose.models.User;
+}
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 

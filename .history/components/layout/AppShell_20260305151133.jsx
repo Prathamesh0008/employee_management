@@ -26,19 +26,22 @@
     ArrowRightOnRectangleIcon,
     BellIcon,
     ChevronDownIcon,
-  PlayIcon,
-  StopIcon,
-  BeakerIcon,
-  TruckIcon,
-  ExclamationTriangleIcon,
-  CurrencyDollarIcon,
-} from "@heroicons/react/24/outline";
+    PlayIcon,
+    StopIcon,
+    SunIcon,
+    MoonIcon,
+    BeakerIcon,
+    ExclamationTriangleIcon,
+    CurrencyDollarIcon,
+  } from "@heroicons/react/24/outline";
 
   const NOTIFICATION_REFRESH_MS = 5000;
   const BREAK_MENU_REFRESH_MS = 30000;
-const BREAK_MENU_TYPES = [
-  { key: "break", label: "Break", allowedMinutes: 30, icon: BeakerIcon },
-];
+  const BREAK_MENU_TYPES = [
+    { key: "morning", label: "Morning Break", allowedMinutes: 15, icon: SunIcon },
+    { key: "lunch", label: "Lunch Break", allowedMinutes: 30, icon: BeakerIcon },
+    { key: "afternoon", label: "Afternoon Break", allowedMinutes: 15, icon: MoonIcon },
+  ];
 
   function formatTime(value) {
     if (!value) return "-";
@@ -158,8 +161,6 @@ const BREAK_MENU_TYPES = [
     const [breakMenuLoading, setBreakMenuLoading] = useState(user.role === "employee");
     const [breakActionLoading, setBreakActionLoading] = useState("");
     const [breakMenuError, setBreakMenuError] = useState("");
-    const [drivingMode, setDrivingMode] = useState(false);
-    const [drivingModeLoading, setDrivingModeLoading] = useState(false);
     const [todayAttendance, setTodayAttendance] = useState(null);
     const [todayBreaks, setTodayBreaks] = useState([]);
     const [breakTick, setBreakTick] = useState(Date.now());
@@ -231,15 +232,13 @@ const BREAK_MENU_TYPES = [
       setBreakMenuError("");
 
       try {
-        const [attendanceResponse, breaksResponse, meResponse] = await Promise.all([
+        const [attendanceResponse, breaksResponse] = await Promise.all([
           apiFetch(`/api/attendance?date=${todayDate}`, { cache: "no-store" }),
           apiFetch(`/api/breaks?date=${todayDate}`, { cache: "no-store" }),
-          apiFetch("/api/auth/me", { cache: "no-store" }),
         ]);
-        const [attendanceData, breaksData, meData] = await Promise.all([
+        const [attendanceData, breaksData] = await Promise.all([
           attendanceResponse.json(),
           breaksResponse.json(),
-          meResponse.json(),
         ]);
 
         if (!attendanceResponse.ok) {
@@ -251,9 +250,6 @@ const BREAK_MENU_TYPES = [
 
         setTodayAttendance(attendanceData.attendance?.[0] || null);
         setTodayBreaks(breaksData.breaks || []);
-        if (meResponse.ok && meData?.user) {
-          setDrivingMode(Boolean(meData.user.drivingMode));
-        }
       } catch (error) {
         setBreakMenuError(error.message || "Unable to load break controls");
       } finally {
@@ -416,36 +412,36 @@ const BREAK_MENU_TYPES = [
       }, {});
     }, [todayBreaks, breakTick]);
 
-  const breakStatusMeta = useMemo(() => {
-    if (breakMenuLoading) {
+    const breakStatusMeta = useMemo(() => {
+      if (breakMenuLoading) {
+        return {
+          label: "Loading",
+          classes: "border-slate-700 bg-slate-900 text-slate-300",
+        };
+      }
+      if (activeBreak) {
+        return {
+          label: `${formatBreakTypeLabel(activeBreak.type)} Break Active`,
+          classes: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+        };
+      }
+      if (shiftEnded) {
+        return {
+          label: "Shift Ended",
+          classes: "border-slate-700 bg-slate-900 text-slate-300",
+        };
+      }
+      if (shiftStarted) {
+        return {
+          label: "On Shift",
+          classes: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+        };
+      }
       return {
-        label: "Loading",
-        classes: "border-[#27324a] bg-[#0a1324] text-[#94a3b8]",
+        label: "Shift Not Started",
+        classes: "border-amber-500/30 bg-amber-500/10 text-amber-300",
       };
-    }
-    if (activeBreak) {
-      return {
-        label: `${formatBreakTypeLabel(activeBreak.type)} Break Active`,
-        classes: "border-[#0e7490]/50 bg-[#083344]/70 text-[#22d3ee]",
-      };
-    }
-    if (shiftEnded) {
-      return {
-        label: "Shift Ended",
-        classes: "border-[#334155]/60 bg-[#111827]/80 text-[#cbd5e1]",
-      };
-    }
-    if (shiftStarted) {
-      return {
-        label: "On Shift",
-        classes: "border-[#0f766e]/50 bg-[#052e2b]/80 text-[#2dd4bf]",
-      };
-    }
-    return {
-      label: "Shift Not Started",
-      classes: "border-[#a16207]/60 bg-[#2b2108]/85 text-[#facc15]",
-    };
-  }, [activeBreak, breakMenuLoading, shiftEnded, shiftStarted]);
+    }, [activeBreak, breakMenuLoading, shiftEnded, shiftStarted]);
 
     const runBreakAction = useCallback(async (name, endpoint, body = {}) => {
       setBreakActionLoading(name);
@@ -468,46 +464,24 @@ const BREAK_MENU_TYPES = [
       }
     }, [loadBreakMenuData]);
 
-  const toggleBreakMenu = () => {
-    setBreakMenuOpen((prev) => !prev);
-    void loadBreakMenuData({ silent: true });
-  };
-
-  const toggleDrivingMode = async () => {
-    if (drivingModeLoading) return;
-    setDrivingModeLoading(true);
-    setBreakMenuError("");
-    try {
-      const response = await apiFetch("/api/auth/me/driving-mode", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ drivingMode: !drivingMode }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to toggle driving mode");
-      }
-      setDrivingMode(Boolean(data.drivingMode));
-    } catch (error) {
-      setBreakMenuError(error.message || "Unable to toggle driving mode");
-    } finally {
-      setDrivingModeLoading(false);
-    }
-  };
+    const toggleBreakMenu = () => {
+      setBreakMenuOpen((prev) => !prev);
+      void loadBreakMenuData({ silent: true });
+    };
 
     const renderBreakTrigger = (isMobile = false) => (
       <div className="relative flex items-center gap-2">
-      <motion.button
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={toggleBreakMenu}
-        className={`inline-flex items-center gap-1 rounded-full border border-[#1f2a44] bg-[#050d1d] ${
-          isMobile ? "px-2.5 py-1.5 text-xs" : "px-3 py-2 text-xs"
-        } font-semibold text-[#e2e8f0] transition hover:bg-[#0a1730]`}
-      >
-        Breaks
-        <ChevronDownIcon className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
-      </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={toggleBreakMenu}
+          className={`inline-flex items-center gap-1 rounded-full border border-slate-800 bg-slate-900/85 ${
+            isMobile ? "px-2.5 py-1.5 text-xs" : "px-3 py-2 text-xs"
+          } font-medium text-slate-200 transition hover:bg-slate-800`}
+        >
+          Breaks
+          <ChevronDownIcon className={isMobile ? "h-3.5 w-3.5" : "h-4 w-4"} />
+        </motion.button>
         <span className={`hidden whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold md:inline ${breakStatusMeta.classes}`}>
           {breakStatusMeta.label}
         </span>
@@ -518,86 +492,56 @@ const BREAK_MENU_TYPES = [
     const renderBreakMenuDropdown = () => (
       <AnimatePresence>
         {showBreakMenu && breakMenuOpen ? (
-        <motion.div
-          initial={{ opacity: 0, y: -8, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.98 }}
-          className="fixed left-2 right-2 top-[4.25rem] z-50 max-h-[72vh] overflow-y-auto overflow-x-hidden rounded-2xl border border-[#1a2742] bg-[#030b18]/95 p-2.5 backdrop-blur-lg md:absolute md:left-auto md:right-0 md:top-11 md:w-[19rem]"
-        >
-          <div className="mb-2.5 flex items-center justify-between">
-            <p className="text-[13px] font-semibold text-[#f8fafc]">Break Controls</p>
-            <p className="text-xs text-[#94a3b8]">{formatTime(new Date())}</p>
-          </div>
-
-          <div className="mb-2.5 rounded-lg border border-[#1a2742] bg-[#071426]/80 px-2.5 py-2">
-            <div className="flex items-center justify-between gap-3 text-[11px]">
-              <span className={`rounded-full border px-2 py-0.5 font-semibold ${breakStatusMeta.classes}`}>
-                {breakStatusMeta.label}
-              </span>
-              <span className="text-[#94a3b8]">
-                {shiftStarted ? `Start: ${formatTime(todayAttendance?.shiftStart || todayAttendance?.checkIn)}` : "Start shift to enable breaks"}
-              </span>
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            className="absolute right-0 top-11 z-50 w-[22rem] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-lg"
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-100">Break Controls</p>
+              <p className="text-xs text-slate-400">{formatTime(new Date())}</p>
             </div>
-          </div>
 
-          <div className="mb-2.5 flex items-center justify-between rounded-lg border border-[#1a2742] bg-[#071426]/80 px-2.5 py-2">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-              <TruckIcon className="h-3.5 w-3.5 text-[#00bfc9]" />
-              Driving Mode
+            <div className="mb-3 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2">
+              <div className="flex items-center justify-between gap-3 text-[11px]">
+                <span className={`rounded-full border px-2 py-0.5 font-semibold ${breakStatusMeta.classes}`}>
+                  {breakStatusMeta.label}
+                </span>
+                <span className="text-slate-400">
+                  {shiftStarted ? `Start: ${formatTime(todayAttendance?.shiftStart || todayAttendance?.checkIn)}` : "Start shift to enable breaks"}
+                </span>
+              </div>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={drivingMode}
-              disabled={drivingModeLoading}
-              onClick={() => void toggleDrivingMode()}
-              className={`relative inline-flex h-7 w-16 items-center rounded-full border-2 transition ${
-                drivingMode
-                  ? "border-emerald-300 bg-[#19d21f]"
-                  : "border-rose-300 bg-[#ff1a1a]"
-              } disabled:opacity-50`}
-            >
-              <span
-                className={`absolute text-[10px] font-bold tracking-wide text-white ${
-                  drivingMode ? "left-2.5" : "right-2.5"
-                }`}
-              >
-                {drivingModeLoading ? "..." : drivingMode ? "ON" : "OFF"}
-              </span>
-              <span className={`absolute inset-y-0 left-0 right-0 z-10 flex items-center px-1 ${drivingMode ? "justify-end" : "justify-start"}`}>
-                <span className="inline-block h-5 w-5 rounded-full border border-slate-300 bg-white transition-all duration-200" />
-              </span>
-            </button>
-          </div>
 
             {breakMenuError ? (
-              <div className="mb-2.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2.5 py-2 text-xs text-rose-300">
+              <div className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">
                 {breakMenuError}
               </div>
             ) : null}
 
-            <div className="mb-2.5 grid grid-cols-2 gap-1.5">
+            <div className="mb-3 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={breakMenuLoading || shiftStarted || Boolean(breakActionLoading)}
-              onClick={() => void runBreakAction("shift-start", "/api/attendance/shift-start", {})}
-              className="flex items-center justify-center gap-1 rounded-lg border border-[#0f766e]/40 bg-[#062a2d] px-2 py-1.5 text-xs font-semibold text-[#5eead4] transition hover:bg-[#0b3b3f] disabled:opacity-40"
-            >
-                <PlayIcon className="h-3 w-3" />
+                onClick={() => void runBreakAction("shift-start", "/api/attendance/shift-start", {})}
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs font-medium text-slate-100 transition hover:bg-slate-800 disabled:opacity-40"
+              >
+                <PlayIcon className="h-3.5 w-3.5" />
                 {breakActionLoading === "shift-start" ? "Starting..." : "Start Shift"}
               </button>
               <button
                 type="button"
                 disabled={breakMenuLoading || !shiftStarted || shiftEnded || Boolean(activeBreak) || Boolean(breakActionLoading)}
-              onClick={() => void runBreakAction("shift-end", "/api/attendance/shift-end", {})}
-              className="flex items-center justify-center gap-1 rounded-lg border border-[#334155]/50 bg-[#111827] px-2 py-1.5 text-xs font-semibold text-[#cbd5e1] transition hover:bg-[#1e293b] disabled:opacity-40"
-            >
-                <StopIcon className="h-3 w-3" />
+                onClick={() => void runBreakAction("shift-end", "/api/attendance/shift-end", {})}
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs font-medium text-slate-100 transition hover:bg-slate-800 disabled:opacity-40"
+              >
+                <StopIcon className="h-3.5 w-3.5" />
                 {breakActionLoading === "shift-end" ? "Ending..." : "End Shift"}
               </button>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {BREAK_MENU_TYPES.map((breakType) => {
                 const usage = breakUsageByType[breakType.key] || {
                   usedMinutes: 0,
@@ -609,39 +553,39 @@ const BREAK_MENU_TYPES = [
                 const activeForType = todayBreaks.find(
                   (item) => item.type === breakType.key && item.status === "active",
                 );
-                const completedEntries = todayBreaks.filter(
+                const completedForType = todayBreaks.find(
                   (item) => item.type === breakType.key && item.status === "completed",
                 );
                 const Icon = breakType.icon;
 
                 return (
-                <div key={breakType.key} className="rounded-xl border border-[#1a2742] bg-[#061325]/80 p-2">
-                  <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 text-[#cbd5e1]" />
-                      <p className="text-xs font-medium text-[#e2e8f0]">{breakType.label}</p>
+                  <div key={breakType.key} className="rounded-xl border border-slate-800 bg-slate-900/70 p-2.5">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-slate-300" />
+                        <p className="text-xs font-medium text-slate-200">{breakType.label}</p>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        {usage.usedMinutes}/{breakType.allowedMinutes} min
+                      </p>
                     </div>
-                    <p className="text-[11px] text-[#94a3b8]">
-                      {usage.usedMinutes}/{breakType.allowedMinutes} min
-                    </p>
-                  </div>
-                  <div className="mb-1.5 flex items-center justify-between text-[11px] text-[#94a3b8]">
-                    <span>
-                      {activeForType
-                        ? `${formatTimer(usage.remainingSeconds)} left`
-                          : completedEntries.length > 0
-                            ? `${completedEntries.length} session(s) completed`
+                    <div className="mb-2 flex items-center justify-between text-[11px] text-slate-400">
+                      <span>
+                        {activeForType
+                          ? `${formatTimer(usage.remainingSeconds)} left`
+                          : completedForType
+                            ? "Completed"
                             : "Not started"}
                       </span>
-                    {usage.isActive ? <span className="text-[#22d3ee]">Active</span> : null}
-                  </div>
-                  <div className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-[#0b1b33]">
-                    <div
-                      className={`h-full rounded-full ${usage.overLimit ? "bg-[#f43f5e]" : "bg-[#06b6d4]"}`}
-                      style={{ width: `${usage.progress}%` }}
-                    />
-                  </div>
-                    <div className="grid grid-cols-2 gap-1">
+                      {usage.isActive ? <span className="text-cyan-300">Active</span> : null}
+                    </div>
+                    <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-slate-800">
+                      <div
+                        className={`h-full rounded-full ${usage.overLimit ? "bg-rose-500" : "bg-cyan-500"}`}
+                        style={{ width: `${usage.progress}%` }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5">
                       <button
                         type="button"
                         disabled={
@@ -649,6 +593,7 @@ const BREAK_MENU_TYPES = [
                           !shiftStarted ||
                           shiftEnded ||
                           Boolean(activeBreak) ||
+                          Boolean(completedForType) ||
                           Boolean(breakActionLoading)
                         }
                         onClick={() =>
@@ -656,7 +601,7 @@ const BREAK_MENU_TYPES = [
                             type: breakType.key,
                           })
                         }
-                        className="rounded-md border border-[#0f766e]/40 bg-[#052e2b] px-2 py-1 text-[11px] font-semibold text-[#5eead4] transition hover:bg-[#0b3b3f] disabled:opacity-40"
+                        className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-40"
                       >
                         {breakActionLoading === `start-${breakType.key}` ? "..." : "Start"}
                       </button>
@@ -668,7 +613,7 @@ const BREAK_MENU_TYPES = [
                             type: breakType.key,
                           })
                         }
-                        className="rounded-md border border-[#334155]/50 bg-[#111827] px-2 py-1 text-[11px] font-semibold text-[#cbd5e1] transition hover:bg-[#1e293b] disabled:opacity-40"
+                        className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition hover:bg-slate-800 disabled:opacity-40"
                       >
                         {breakActionLoading === `end-${breakType.key}` ? "..." : "End"}
                       </button>
@@ -753,12 +698,12 @@ const BREAK_MENU_TYPES = [
       }
     };
 
-  return (
-    <motion.div 
-      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.12),transparent_24%),linear-gradient(180deg,#050b16_0%,#0b1324_100%)]"
-      initial="hidden"
-      animate="visible"
-    >
+    return (
+      <motion.div 
+        className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.12),transparent_24%),linear-gradient(180deg,#050b16_0%,#0b1324_100%)]"
+        initial="hidden"
+        animate="visible"
+      >
         <div className="flex min-h-screen w-full min-w-0 flex-col md:flex-row">
           {/* Mobile Header */}
           <motion.div 
@@ -1016,8 +961,8 @@ const BREAK_MENU_TYPES = [
           </motion.main>
         </div>
 
-      <AnimatePresence>
-        {urgentTaskAlert ? (
+        <AnimatePresence>
+          {urgentTaskAlert ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1155,8 +1100,8 @@ const BREAK_MENU_TYPES = [
                 </div>
               </motion.div>
             </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
+    );
+  }
