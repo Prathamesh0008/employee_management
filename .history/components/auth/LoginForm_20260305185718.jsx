@@ -193,7 +193,7 @@ export default function LoginForm() {
 
         <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/85 backdrop-blur-xl">
           {/* Header Gradient */}
-          <div className="absolute top-0 h-1.5 w-full " />
+          <div className="absolute top-0 h-1.5 w-full bg-gradient-to-r from-[#00bfc9] to-blue-500" />
           
           <div className="p-8">
             {/* Header */}
@@ -328,7 +328,7 @@ export default function LoginForm() {
                       exit={{ opacity: 0 }}
                       className="flex items-center justify-center gap-2"
                     >
-                      <span>Log In</span>
+                      <span>Lo</span>
                       <ArrowRightIcon className="h-5 w-5" />
                     </motion.div>
                   )}

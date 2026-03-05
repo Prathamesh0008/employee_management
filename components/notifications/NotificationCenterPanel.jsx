@@ -107,20 +107,20 @@ const cardVariants = {
     },
   },
   hover: {
-    scale: 1.02,
-    y: -2,
+    scale: 1,
+    y: 0,
     transition: {
       type: "spring",
       stiffness: 400,
       damping: 25,
     },
   },
-  tap: { scale: 0.98 },
+  tap: { scale: 1 },
 };
 
 const buttonVariants = {
-  hover: { scale: 1.05 },
-  tap: { scale: 0.95 },
+  hover: { scale: 1 },
+  tap: { scale: 1 },
   disabled: { opacity: 0.5, scale: 1 },
 };
 
@@ -140,7 +140,7 @@ const notificationVariants = {
   initial: { opacity: 0, x: 50 },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: -50 },
-  hover: { scale: 1.01, backgroundColor: "rgba(241, 245, 249, 0.8)" },
+  hover: { scale: 1 },
 };
 
 export default function NotificationCenterPanel({ title, canBroadcast = false, managerMode = false }) {
@@ -429,8 +429,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             <div className="flex items-center gap-2">
               <motion.button
                 type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1 }}
+                whileTap={{ scale: 1 }}
                 onClick={() => void handleTestSound()}
                 className="flex items-center gap-2 rounded-full border border-[#00bfc9]/40 bg-[#05171c] px-3 py-1.5"
               >
@@ -438,7 +438,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                 <span className="text-xs sm:text-sm font-medium text-[#00bfc9]">Test sound</span>
               </motion.button>
               <motion.div
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1 }}
                 className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5"
               >
                 <BellIcon className="h-4 w-4 text-[#00bfc9]" />
@@ -448,7 +448,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
               </motion.div>
               {canBroadcast && (
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1 }}
                   className="flex items-center gap-2 rounded-full border border-[#00bfc9]/30 bg-[#052129] px-3 py-1.5"
                 >
                   <MegaphoneIcon className="h-4 w-4 text-[#00bfc9]" />
@@ -613,8 +613,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                     return (
                       <motion.button
                         key={tab.key}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1 }}
+                        whileTap={{ scale: 1 }}
                         onClick={() => setFilter(tab.key)}
                         className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
                           filter === tab.key
@@ -698,11 +698,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                       className={`group relative overflow-hidden rounded-xl border transition-all duration-200 ${
                         isHighPriorityTask
                           ? item.isRead
-                            ? "border-rose-500/25 bg-rose-500/10 hover:border-rose-500/40"
-                            : "border-rose-500/40 bg-rose-500/15 hover:border-rose-500/50"
+                            ? "border-rose-500/25 bg-rose-500/10 hover:border-rose-500/40 hover:bg-rose-500/12"
+                            : "border-rose-500/40 bg-rose-500/15 hover:border-rose-500/55 hover:bg-rose-500/18"
                           : item.isRead 
-                            ? "border-slate-700 bg-slate-900 hover:border-slate-600" 
-                            : "border-[#00bfc9]/35 bg-[#062029] hover:border-[#00bfc9]/55"
+                            ? "border-slate-700 bg-slate-900 hover:border-slate-600 hover:bg-slate-800/90" 
+                            : "border-[#00bfc9]/35 bg-[#062029] hover:border-[#00bfc9]/55 hover:bg-[#08303d]"
                       }`}
                     >
                       {/* Unread Indicator */}
@@ -785,8 +785,8 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                           {/* Actions */}
                           <div className="flex items-center gap-2">
                             <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                              whileHover={{ scale: 1 }}
+                              whileTap={{ scale: 1 }}
                               type="button"
                               onClick={() => void markOne(item._id, !item.isRead)}
                               className={`p-2 rounded-lg transition-colors ${
@@ -806,7 +806,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                         </div>
 
                         {/* Decorative Elements */}
-                        <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-gradient-to-br from-slate-100 to-white opacity-50 blur-2xl" />
+                        <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-gradient-to-br from-slate-700/40 to-slate-900/20 opacity-60 blur-2xl" />
                       </div>
                     </motion.div>
                       );
