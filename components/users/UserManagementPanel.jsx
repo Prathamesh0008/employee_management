@@ -58,10 +58,29 @@ function getShiftByGender(gender) {
   return gender === "female" ? "women-day" : "men-day";
 }
 
+function getShiftMetaByGender(gender) {
+  if (getShiftByGender(gender) === "women-day") {
+    return {
+      label: "Women Shift",
+      time: "9 AM - 6 PM",
+    };
+  }
+
+  return {
+    label: "Men Shift",
+    time: "10 AM - 7 PM",
+  };
+}
+
 function getShiftLabelByGender(gender) {
-  return getShiftByGender(gender) === "women-day"
-    ? "Women Shift (9 AM - 6 PM)"
-    : "Men Shift (10 AM - 7 PM)";
+  const shift = getShiftMetaByGender(gender);
+  return `${shift.label} (${shift.time})`;
+}
+
+function getShiftCompactLabelByGender(gender) {
+  const shift = getShiftMetaByGender(gender);
+  const shortLabel = shift.label.replace(" Shift", "");
+  return `${shortLabel} ${shift.time}`;
 }
 
 // Animation variants
@@ -346,7 +365,7 @@ export default function UserManagementPanel() {
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 to-purple-600/5" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold  text-red-200">
                 Employee Profile Master
               </h1>
               <p className="mt-1 text-sm text-slate-500">
@@ -437,7 +456,7 @@ export default function UserManagementPanel() {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50" />
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50" /> */}
           
           <div className="relative p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-6">
@@ -549,8 +568,13 @@ export default function UserManagementPanel() {
                     <CalendarIcon className="h-3 w-3" />
                     Shift Assignment
                   </label>
-                  <div className="rounded-lg border border-slate-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2.5 text-sm text-indigo-700 font-medium">
-                    {getShiftLabelByGender(form.gender)}
+                  <div className="rounded-lg border border-slate-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2.5">
+                    <p className="text-sm font-semibold text-indigo-700">
+                      {getShiftMetaByGender(form.gender).label}
+                    </p>
+                    <p className="text-xs text-indigo-500">
+                      {getShiftMetaByGender(form.gender).time}
+                    </p>
                   </div>
                 </div>
 
@@ -724,7 +748,7 @@ export default function UserManagementPanel() {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50" />
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50" /> */}
           
           <div className="relative p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -851,8 +875,10 @@ export default function UserManagementPanel() {
                               <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${GENDER_STYLES[user.gender] || GENDER_STYLES.male}`}>
                                 {user.gender}
                               </span>
-                              <span className="text-slate-400">•</span>
-                              <span className="text-slate-600">{getShiftLabelByGender(user.gender)}</span>
+                              <span className="text-slate-400">|</span>
+                              <span className="text-slate-600">
+                                {getShiftMetaByGender(user.gender).label} {getShiftMetaByGender(user.gender).time}
+                              </span>
                             </div>
                             {user.baseSalary > 0 && (
                               <div className="flex items-center gap-2 text-xs">
@@ -881,18 +907,28 @@ export default function UserManagementPanel() {
                 </div>
 
                 {/* Desktop Table View */}
-                <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-100">
-                  <table className="min-w-full">
+                <div className="hidden overflow-hidden rounded-xl border border-slate-100 lg:block">
+                  <table className="w-full table-fixed">
+                    <colgroup>
+                      <col className="w-[18%]" />
+                      <col className="w-[23%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[10%]" />
+                      <col className="w-[13%]" />
+                      <col className="w-[7%]" />
+                      <col className="w-[9%]" />
+                    </colgroup>
                     <thead>
-                      <tr className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-slate-200">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Designation</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Shift</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Salary</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                      <tr className="bg-slate-200">
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Employee</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Contact</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Role</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Department</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Designation</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Shift</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Salary</th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -907,43 +943,47 @@ export default function UserManagementPanel() {
                             whileHover={{ backgroundColor: "rgba(241, 245, 249, 0.5)" }}
                             className="group transition-colors duration-200"
                           >
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
+                            <td className="px-3 py-3">
+                              <div className="flex min-w-0 items-center gap-2">
                                 <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
                                   {user.name?.charAt(0) || "U"}
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-slate-800">{user.name}</p>
-                                  <p className="text-xs text-slate-400">{user.employeeCode || "-"}</p>
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-medium text-slate-800">{user.name}</p>
+                                  <p className="truncate text-xs text-slate-400">{user.employeeCode || "-"}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3">
-                              <p className="text-sm text-slate-600">{user.email}</p>
-                              <p className="text-xs text-slate-400">{user.phone || "-"}</p>
+                            <td className="px-3 py-3">
+                              <p className="truncate text-sm text-slate-600">{user.email}</p>
+                              <p className="truncate text-xs text-slate-400">{user.phone || "-"}</p>
                             </td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${ROLE_STYLES[user.role] || ROLE_STYLES.employee}`}>
+                            <td className="px-3 py-3">
+                              <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-medium ${ROLE_STYLES[user.role] || ROLE_STYLES.employee}`}>
                                 {user.role}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{user.department || "-"}</td>
-                            <td className="px-4 py-3 text-sm text-slate-600">{user.designation || "-"}</td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${GENDER_STYLES[user.gender]}`}>
-                                {getShiftLabelByGender(user.gender)}
-                              </span>
+                            <td className="px-3 py-3 text-sm text-slate-600">
+                              <p className="truncate">{user.department || "-"}</p>
                             </td>
-                            <td className="px-4 py-3 text-sm font-medium text-emerald-600">
+                            <td className="px-3 py-3 text-sm text-slate-600">
+                              <p className="truncate">{user.designation || "-"}</p>
+                            </td>
+                            <td className="px-3 py-3">
+                              <p className="truncate text-[11px] font-semibold text-slate-700">
+                                {getShiftCompactLabelByGender(user.gender)}
+                              </p>
+                            </td>
+                            <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-emerald-600">
                               ${user.baseSalary?.toLocaleString() || 0}
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-3 whitespace-nowrap">
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 type="button"
                                 onClick={() => startEdit(user)}
-                                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                className="inline-flex min-w-[72px] shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors"
                               >
                                 <PencilSquareIcon className="h-3 w-3" />
                                 Edit
@@ -980,3 +1020,4 @@ export default function UserManagementPanel() {
     </motion.div>
   );
 }
+

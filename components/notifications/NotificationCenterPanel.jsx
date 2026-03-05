@@ -414,7 +414,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold text-red-300">
                 {title}
               </h1>
               <p className="mt-1 text-sm text-slate-500">

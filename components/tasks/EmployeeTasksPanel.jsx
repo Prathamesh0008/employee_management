@@ -294,8 +294,8 @@ export default function EmployeeTasksPanel({ initialTasks }) {
             className={`
               text-2xl font-bold md:text-3xl
               ${isDarkMode 
-                ? "bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent" 
-                : "bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent"
+                ? "text-slate-400" 
+                : "text-slate-400 "
               }
             `}
             initial={{ x: -20, opacity: 0 }}

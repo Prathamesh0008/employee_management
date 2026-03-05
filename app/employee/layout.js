@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/session";
 const links = [
   { label: "Dashboard", href: "/employee/dashboard", icon: "dashboard" },
   { label: "Attendance", href: "/employee/attendance", icon: "reports" },
+  { label: "Reimbursements", href: "/employee/reimbursements", icon: "currency" },
   { label: "Notifications", href: "/employee/notifications", icon: "reports" },
 ];
 

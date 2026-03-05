@@ -323,7 +323,10 @@ export default function EmployeeDashboardAttendanceSection() {
       tone: "emerald",
       action: handleStartShift,
       disabled: !canStartShift,
-      hint: actionLoading === "shift-start" ? "Starting..." : "Click to start shift",
+      hint: shiftStarted ? "Shift started" : "Ready to start shift",
+      buttonLabel: actionLoading === "shift-start" ? "Starting..." : "Start Shift",
+      buttonTone: "from-emerald-500 to-green-500",
+      showButton: !shiftStarted,
     },
     {
       icon: StopIcon,
@@ -333,11 +336,16 @@ export default function EmployeeDashboardAttendanceSection() {
       action: handleEndShift,
       disabled: !canEndShift,
       hint:
-        actionLoading === "shift-end"
-          ? "Ending..."
+        shiftEnded
+          ? "Shift already ended"
           : activeBreak
             ? "End active break first"
-            : "Click to end shift",
+            : shiftStarted
+              ? "Ready to end shift"
+              : "Start shift first",
+      buttonLabel: actionLoading === "shift-end" ? "Ending..." : "End Shift",
+      buttonTone: "from-blue-500 to-indigo-500",
+      showButton: shiftStarted && !shiftEnded,
     },
     {
       icon: ClockIcon,
@@ -381,19 +389,11 @@ export default function EmployeeDashboardAttendanceSection() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           const style = CARD_STYLES[stat.tone];
-          const Component = stat.action ? "button" : "article";
 
           return (
-            <Component
+            <article
               key={stat.label}
-              type={stat.action ? "button" : undefined}
-              disabled={stat.action ? stat.disabled : undefined}
-              onClick={stat.action}
-              className={`rounded-[24px] border border-slate-800 bg-slate-900/85 px-5 py-6 text-left shadow-sm ring-1 ${style.ring} ${
-                stat.action
-                  ? "transition hover:-translate-y-0.5 hover:border-cyan-500/35 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
-                  : ""
-              }`}
+              className={`rounded-[24px] border border-slate-800 bg-slate-900/85 px-5 py-6 text-left shadow-sm ring-1 ${style.ring}`}
             >
               <div className={`inline-flex rounded-2xl p-3 ${style.badge}`}>
                 <Icon className="h-5 w-5" />
@@ -407,7 +407,32 @@ export default function EmployeeDashboardAttendanceSection() {
               <p className="mt-2 text-sm text-slate-400">
                 {loading ? "Loading..." : stat.hint || stat.subValue || "\u00A0"}
               </p>
-            </Component>
+              {stat.action && stat.showButton ? (
+                <button
+                  type="button"
+                  disabled={stat.disabled}
+                  onClick={stat.action}
+                  className={`mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${stat.buttonTone} px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  {actionLoading === "shift-start" && stat.label === "Shift Start" ? (
+                    <>
+                      <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                      {stat.buttonLabel}
+                    </>
+                  ) : actionLoading === "shift-end" && stat.label === "Shift End" ? (
+                    <>
+                      <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                      {stat.buttonLabel}
+                    </>
+                  ) : (
+                    <>
+                      <Icon className="h-4 w-4" />
+                      {stat.buttonLabel}
+                    </>
+                  )}
+                </button>
+              ) : null}
+            </article>
           );
         })}
       </div>
@@ -419,51 +444,11 @@ export default function EmployeeDashboardAttendanceSection() {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-100">Today&apos;s Actions</h3>
-            <p className="text-sm text-slate-400">Manage your shift and breaks</p>
+            <p className="text-sm text-slate-400">Manage your breaks</p>
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            disabled={!canStartShift}
-            onClick={handleStartShift}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {actionLoading === "shift-start" ? (
-              <>
-                <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                Starting...
-              </>
-            ) : (
-              <>
-                <PlayIcon className="h-4 w-4" />
-                Start Shift
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            disabled={!canEndShift}
-            onClick={handleEndShift}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {actionLoading === "shift-end" ? (
-              <>
-                <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                Ending...
-              </>
-            ) : (
-              <>
-                <StopIcon className="h-4 w-4" />
-                End Shift
-              </>
-            )}
-          </button>
-        </div>
-
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="flex items-center justify-between gap-3">
             <h4 className="text-sm font-semibold text-slate-300">Break Sessions</h4>
             <p className="text-xs text-slate-500">Only one active break at a time</p>

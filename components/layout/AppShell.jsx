@@ -26,6 +26,7 @@ import {
   ArrowRightOnRectangleIcon,
   BellIcon,
   ExclamationTriangleIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 
 const NOTIFICATION_REFRESH_MS = 5000;
@@ -36,6 +37,7 @@ const iconMap = {
   tasks: BriefcaseIcon,
   calendar: CalendarIcon,
   reports: ChartBarIcon,
+  currency: CurrencyDollarIcon,
   settings: Cog6ToothIcon,
   default: HomeIcon,
 };
@@ -440,7 +442,7 @@ export default function AppShell({ user, links, children }) {
                     className="h-10 w-10 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_26px_rgba(56,189,248,0.35)]"
                   />
                   <div>
-                    <h2 className="bg-gradient-to-r from-cyan-300 via-blue-300 to-indigo-300 bg-clip-text text-lg font-bold text-transparent">
+                    <h2 className="text-red-200 text-lg font-bold ">
                       EMS Portal
                     </h2>
                     <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">{user.role}</p>
@@ -547,7 +549,7 @@ export default function AppShell({ user, links, children }) {
           >
             <div>
               <motion.h1 
-                className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-2xl font-bold text-transparent"
+                className="text-slate-400 bg-clip-text text-2xl font-bold text-transparent"
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
