@@ -186,9 +186,9 @@ export default function LoginForm() {
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           className="absolute -left-4 -top-4 z-10"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-[#00bfc9] to-blue-500">
+          {/* <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-[#00bfc9] to-blue-500">
             <BuildingOfficeIcon className="h-6 w-6 text-white" />
-          </div>
+          </div> */}
         </motion.div>
 
         <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/85 backdrop-blur-xl">
@@ -335,28 +335,6 @@ export default function LoginForm() {
                 </AnimatePresence>
               </motion.button>
             </motion.form>
-
-            {/* Footer */}
-            <motion.div 
-              variants={itemVariants}
-              className="mt-6 text-center text-sm text-slate-400"
-            >
-              <p>Demo credentials:</p>
-              <div className="mt-2 flex flex-wrap justify-center gap-2">
-                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
-                  boss@company.local
-                </span>
-                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
-                  manager@company.local
-                </span>
-                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800">
-                  employee01@company.local
-                </span>
-              </div>
-              <p className="mt-2 text-xs">
-                Password: use the seeded password from <code>.env.local</code>
-              </p>
-            </motion.div>
           </div>
         </div>
 
@@ -365,7 +343,7 @@ export default function LoginForm() {
           variants={itemVariants}
           className="mt-4 text-center text-sm text-slate-500"
         >
-          Copyright 2024 Employee Management System. All rights reserved.
+          Copyright 2026 Employee Management System. All rights reserved.
         </motion.div>
       </motion.div>
     </motion.main>

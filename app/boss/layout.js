@@ -8,7 +8,6 @@ const links = [
   { label: "Reimbursements", href: "/boss/reimbursements", icon: "currency" },
   { label: "Reports", href: "/boss/reports", icon: "reports" },
   { label: "Notifications", href: "/boss/notifications", icon: "reports" },
-  { label: "Holidays", href: "/boss/holidays", icon: "calendar" },
 ];
 
 export default async function BossLayout({ children }) {
