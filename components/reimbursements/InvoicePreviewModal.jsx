@@ -87,7 +87,7 @@ export default function InvoicePreviewModal({ invoice, title, onClose }) {
               <a
                 href={invoice.dataUrl}
                 download={invoice.fileName || "invoice"}
-                className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                className="rounded bg-[#A346FF] px-4 py-2 text-sm font-medium text-white"
               >
                 Download Invoice
               </a>
@@ -98,3 +98,4 @@ export default function InvoicePreviewModal({ invoice, title, onClose }) {
     </div>
   );
 }
+

@@ -20,7 +20,7 @@ const PRIORITY_STYLES = {
 
 const STATUS_STYLES = {
   pending: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  "in-progress": "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  "in-progress": "bg-[#A346FF]/10 text-[#A346FF] border-[#A346FF]/20",
   completed: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
 };
 
@@ -224,7 +224,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                 isDarkMode ? "border-slate-700 bg-slate-800/40" : "border-slate-200 bg-slate-50/70"
               }`}>
                 <div className="flex items-center gap-2">
-                  <ChatBubbleLeftRightIcon className={`h-5 w-5 ${isDarkMode ? "text-blue-300" : "text-blue-600"}`} />
+                  <ChatBubbleLeftRightIcon className={`h-5 w-5 ${isDarkMode ? "text-[#A346FF]" : "text-[#A346FF]"}`} />
                   <h4 className={`text-sm font-semibold ${isDarkMode ? "text-slate-100" : "text-slate-900"}`}>
                     Comments
                   </h4>
@@ -264,8 +264,8 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                     placeholder="Add an update or ask a question..."
                     className={`w-full rounded-xl border px-4 py-3 text-sm outline-none transition ${
                       isDarkMode
-                        ? "border-slate-700 bg-slate-900 text-slate-100 focus:border-blue-500"
-                        : "border-slate-300 bg-white text-slate-900 focus:border-blue-500"
+                        ? "border-slate-700 bg-slate-900 text-slate-100 focus:border-[#A346FF]"
+                        : "border-slate-300 bg-white text-slate-900 focus:border-[#A346FF]"
                     }`}
                   />
                   {error ? <p className="text-sm text-rose-400">{error}</p> : null}
@@ -273,7 +273,7 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
                     type="button"
                     onClick={() => void submitComment()}
                     disabled={submittingComment || !comment.trim()}
-                    className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submittingComment ? "Posting..." : "Post Comment"}
                   </button>
@@ -286,3 +286,4 @@ export default function TaskDetailsModal({ task, isDarkMode, onClose, onTaskUpda
     </AnimatePresence>
   );
 }
+

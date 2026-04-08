@@ -200,7 +200,7 @@ export default function ReimbursementReviewPanel({ initialReimbursements = [] })
                 onClick={() => setFilter(option)}
                 className={`rounded px-3 py-2 text-sm font-medium ${
                   filter === option
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-[#A346FF] text-white"
                     : "border border-slate-300 text-slate-700"
                 }`}
               >
@@ -248,7 +248,7 @@ export default function ReimbursementReviewPanel({ initialReimbursements = [] })
                       <button
                         type="button"
                         onClick={() => openReviewModal(item)}
-                        className="rounded bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white"
+                        className="rounded bg-[#A346FF] px-3 py-1.5 text-xs font-medium text-white"
                       >
                         Review
                       </button>
@@ -309,7 +309,7 @@ export default function ReimbursementReviewPanel({ initialReimbursements = [] })
                             <button
                               type="button"
                               onClick={() => openReviewModal(item)}
-                              className="rounded bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white"
+                              className="rounded bg-[#A346FF] px-3 py-1.5 text-xs font-medium text-white"
                             >
                               Review
                             </button>
@@ -409,3 +409,4 @@ export default function ReimbursementReviewPanel({ initialReimbursements = [] })
     </div>
   );
 }
+

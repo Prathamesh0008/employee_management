@@ -48,7 +48,7 @@ const STATUS_STYLES = {
   present: "bg-emerald-100 text-emerald-700 border-emerald-200",
   "half-day": "bg-amber-100 text-amber-700 border-amber-200",
   absent: "bg-rose-100 text-rose-700 border-rose-200",
-  holiday: "bg-purple-100 text-purple-700 border-purple-200",
+  holiday: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
 };
 
 // Animation variants
@@ -420,7 +420,7 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
               value: report?.summary?.totalRecords || 0,
               subValue: `${attendanceRate}% attendance rate`,
               color: "indigo",
-              gradient: "from-indigo-500 to-purple-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: CheckCircleIcon, 
@@ -441,14 +441,14 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
               label: "Work Minutes", 
               value: formatMinutes(report?.summary?.totalWorkMinutes || 0),
               color: "blue",
-              gradient: "from-blue-500 to-indigo-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: MoonIcon, 
               label: "Break Minutes", 
               value: formatMinutes(report?.summary?.totalBreakMinutes || 0),
               color: "purple",
-              gradient: "from-purple-500 to-pink-500"
+              gradient: "from-[#A346FF] to-pink-500"
             },
           ].map((stat, idx) => (
             <motion.div
@@ -479,11 +479,11 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#A346FF]/50 to-[#A346FF]/100" />
           
           <div className="relative p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 p-2.5 shadow-lg">
+              <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] p-2.5 shadow-lg">
                 <UserGroupIcon className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -495,9 +495,9 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-indigo-500 animate-spin" />
+                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-[#A346FF] animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-indigo-500 animate-pulse" />
+                    <SparklesIcon className="h-5 w-5 text-[#A346FF] animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -516,12 +516,12 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
                         whileHover={{ scale: 1.02 }}
                         className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 p-4 shadow-md hover:shadow-lg transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-[#A346FF]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-medium">
+                              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] to-[#A346FF] flex items-center justify-center text-white text-xs font-medium">
                                 {row.user?.name?.charAt(0) || "U"}
                               </div>
                               <div>
@@ -563,7 +563,7 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
                 <div className="hidden lg:block overflow-x-auto rounded-xl border border-slate-100">
                   <table className="min-w-full">
                     <thead>
-                      <tr className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-slate-200">
+                      <tr className="bg-gradient-to-r from-[#A346FF] to-[#A346FF] border-b border-slate-200">
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Employee</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Shift Start</th>
@@ -587,7 +587,7 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-medium">
+                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] to-[#A346FF] flex items-center justify-center text-white text-xs font-medium">
                                   {row.user?.name?.charAt(0) || "U"}
                                 </div>
                                 <div>
@@ -605,12 +605,12 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-indigo-600">
+                              <span className="text-sm font-medium text-[#A346FF]">
                                 {formatMinutes(row.totalWorkMinutes)}
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-purple-600">
+                              <span className="text-sm font-medium text-[#A346FF]">
                                 {formatMinutes(row.breakMinutes)}
                               </span>
                             </td>
@@ -685,7 +685,7 @@ export default function AttendanceReportPanel({ title, enableUserFilter = false 
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-4 shadow-lg"
+              className="rounded-xl bg-gradient-to-br from-[#A346FF] to-pink-500 p-4 shadow-lg"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-white/20 p-2">

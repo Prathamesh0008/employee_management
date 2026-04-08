@@ -8,7 +8,7 @@ export const metadata = {
 
 const STATUS_COLORS = {
   pending: "bg-slate-100 text-slate-700",
-  "in-progress": "bg-blue-100 text-blue-700",
+  "in-progress": "bg-[#A346FF]/15 text-[#A346FF]",
   completed: "bg-green-100 text-green-700",
 };
 
@@ -153,3 +153,4 @@ export default async function BossDashboardPage() {
     </div>
   );
 }
+

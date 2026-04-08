@@ -22,23 +22,23 @@ const BREAK_TYPES = [
     label: "Break",
     allowedMinutes: 30,
     icon: BeakerIcon,
-    badge: "bg-cyan-500/15 text-cyan-300",
-    progress: "bg-cyan-500",
+    badge: "bg-[#A346FF]/15 text-[#A346FF]",
+    progress: "bg-[#A346FF]",
   },
 ];
 
 const CARD_STYLES = {
   indigo: {
-    badge: "bg-indigo-500/15 text-indigo-300",
-    ring: "ring-indigo-500/15",
+    badge: "bg-[#A346FF]/15 text-[#A346FF]",
+    ring: "ring-[#A346FF]/15",
   },
   emerald: {
     badge: "bg-emerald-500/15 text-emerald-300",
     ring: "ring-emerald-500/15",
   },
   blue: {
-    badge: "bg-blue-500/15 text-blue-300",
-    ring: "ring-blue-500/15",
+    badge: "bg-[#A346FF]/15 text-[#A346FF]",
+    ring: "ring-[#A346FF]/15",
   },
   amber: {
     badge: "bg-amber-500/15 text-amber-300",
@@ -365,7 +365,7 @@ export default function EmployeeDashboardAttendanceSection() {
               ? "Ready to end shift"
               : "Start shift first",
       buttonLabel: actionLoading === "shift-end" ? "Ending..." : "End Shift",
-      buttonTone: "from-blue-500 to-indigo-500",
+      buttonTone: "from-[#A346FF] to-[#A346FF]",
       showButton: shiftStarted && !shiftEnded,
     },
     {
@@ -458,11 +458,11 @@ export default function EmployeeDashboardAttendanceSection() {
         })}
       </div>
 
-      <div className="mt-6 rounded-[24px] border border-slate-800 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.10),transparent_50%),linear-gradient(180deg,rgba(15,23,42,0.85)_0%,rgba(2,6,23,0.85)_100%)] p-5">
+      <div className="mt-6 rounded-[24px] border border-slate-800 bg-[radial-gradient(circle_at_top_right,rgba(163,70,255,0.10),transparent_50%),linear-gradient(180deg,rgba(15,23,42,0.85)_0%,rgba(2,6,23,0.85)_100%)] p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3">
-              <SparklesIcon className="h-5 w-5 text-cyan-300" />
+            <div className="rounded-2xl border border-[#A346FF]/30 bg-[#A346FF]/10 p-3">
+              <SparklesIcon className="h-5 w-5 text-[#A346FF]" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-slate-100">Today&apos;s Actions</h3>
@@ -502,7 +502,7 @@ export default function EmployeeDashboardAttendanceSection() {
                   <span
                     className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
                       usage.isActive
-                        ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-300"
+                        ? "border-[#A346FF]/40 bg-[#A346FF]/10 text-[#A346FF]"
                         : "border-slate-700 bg-slate-900 text-slate-400"
                     }`}
                   >
@@ -555,7 +555,7 @@ export default function EmployeeDashboardAttendanceSection() {
                     onClick={() =>
                       void runAction(`start-${breakType.key}`, "/api/breaks/start", { type: breakType.key })
                     }
-                    className="rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-4 py-2.5 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-xl border border-[#A346FF]/35 bg-[#A346FF]/10 px-4 py-2.5 text-sm font-semibold text-[#A346FF] transition hover:bg-[#A346FF]/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {actionLoading === `start-${breakType.key}` ? (
                       <ArrowPathIcon className="mx-auto h-4 w-4 animate-spin" />
@@ -587,7 +587,7 @@ export default function EmployeeDashboardAttendanceSection() {
             <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/70 p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <TruckIcon className="h-4 w-4 text-cyan-300" />
+                  <TruckIcon className="h-4 w-4 text-[#A346FF]" />
                   <div>
                     <p className="text-sm font-semibold text-slate-100">Driving Mode</p>
                     <p className="text-xs text-slate-400">{drivingMode ? "On" : "Off"}</p>
@@ -631,7 +631,7 @@ export default function EmployeeDashboardAttendanceSection() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Break Status</span>
-                <span className={`font-semibold ${breakSummary.isActive ? "text-cyan-300" : "text-slate-200"}`}>
+                <span className={`font-semibold ${breakSummary.isActive ? "text-[#A346FF]" : "text-slate-200"}`}>
                   {breakSummary.isActive ? "Active" : "Idle"}
                 </span>
               </div>
@@ -648,3 +648,4 @@ export default function EmployeeDashboardAttendanceSection() {
     </section>
   );
 }
+

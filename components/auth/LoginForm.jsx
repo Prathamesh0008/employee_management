@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { apiFetch } from "@/lib/client-api";
 import { useEffect, useState } from "react";
@@ -129,7 +129,7 @@ export default function LoginForm() {
                 value={form.email}
                 onChange={onChange}
                 placeholder="you@company.com"
-                className="h-11 w-full rounded-lg border border-[#4f41a8] bg-[#0f0d1c] px-4 text-sm text-white outline-none transition focus:border-[#7156ff] focus:shadow-[0_0_0_3px_rgba(113,86,255,0.22)]"
+                className="h-11 w-full rounded-lg border border-[#4f41a8] bg-[#0f0d1c] px-4 text-sm text-white outline-none transition focus:border-[#A346FF] focus:shadow-[0_0_0_3px_rgba(163,70,255,0.22)]"
               />
             </div>
 
@@ -147,7 +147,7 @@ export default function LoginForm() {
                   value={form.password}
                   onChange={onChange}
                   placeholder="........"
-                  className="h-11 w-full rounded-lg border border-white/15 bg-[#0f0d1c] px-4 pr-10 text-sm text-white outline-none transition focus:border-[#7156ff] focus:shadow-[0_0_0_3px_rgba(113,86,255,0.22)]"
+                  className="h-11 w-full rounded-lg border border-white/15 bg-[#0f0d1c] px-4 pr-10 text-sm text-white outline-none transition focus:border-[#A346FF] focus:shadow-[0_0_0_3px_rgba(163,70,255,0.22)]"
                 />
                 <button
                   type="button"
@@ -165,7 +165,7 @@ export default function LoginForm() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="mt-[3px] h-4 w-4 rounded border border-white/25 bg-[#0f0d1c] text-[#7b61ff] focus:ring-[#7b61ff]"
+                className="mt-[3px] h-4 w-4 rounded border border-white/25 bg-[#0f0d1c] text-[#A346FF] focus:ring-[#A346FF]"
               />
               <span className="text-sm leading-5 text-white/78">Keep me signed in</span>
             </label>
@@ -187,7 +187,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-1 h-11 w-full rounded-lg bg-gradient-to-r from-[#6b4eff] to-[#7a64ff] text-sm font-semibold text-white shadow-[0_12px_28px_rgba(88,58,255,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-1 h-11 w-full rounded-lg bg-gradient-to-r from-[#A346FF] to-[#A346FF] text-sm font-semibold text-white shadow-[0_12px_28px_rgba(163,70,255,0.45)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
@@ -198,3 +198,4 @@ export default function LoginForm() {
     </main>
   );
 }
+

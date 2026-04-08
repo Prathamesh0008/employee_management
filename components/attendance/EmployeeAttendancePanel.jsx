@@ -336,7 +336,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 p-3 sm:p-4 md:p-6"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-[#A346FF]/30 to-[#A346FF]/30 p-3 sm:p-4 md:p-6"
       initial="hidden"
       animate={isLoaded ? "visible" : "hidden"}
       variants={containerVariants}
@@ -345,12 +345,12 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl"
+        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-purple-500/5 blur-3xl"
+        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
 
       <div className="relative space-y-4 sm:space-y-6">
@@ -361,10 +361,10 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
               variants={itemVariants}
               className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-[#A346FF]/10" />
               <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#A346FF] to-[#A346FF] bg-clip-text text-transparent">
                     Attendance & Breaks
                   </h1>
                   <p className="mt-1 text-sm text-slate-500">
@@ -376,7 +376,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                     whileHover={{ scale: 1.05 }}
                     className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
                   >
-                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                    <CalendarIcon className="h-4 w-4 text-[#A346FF]" />
                     <span className="text-xs sm:text-sm font-medium text-slate-700">{formatDate(new Date())}</span>
                   </motion.div>
                   {shiftStarted && !shiftEnded && (
@@ -426,7 +426,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
               value: getShiftLabel(userShift.shiftType, userShift.gender),
               subValue: `Weekly Off: ${formatWeeklyOff(userShift.weeklyOffDays)}`,
               color: "indigo",
-              gradient: "from-indigo-500 to-purple-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: PlayIcon, 
@@ -440,7 +440,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
               label: "Shift End", 
               value: formatTime(todayAttendance?.shiftEnd || todayAttendance?.checkOut),
               color: "blue",
-              gradient: "from-blue-500 to-indigo-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: ClockIcon, 
@@ -490,11 +490,11 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
               variants={itemVariants}
               className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
             >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#A346FF]/50 to-[#A346FF]/100" />
           
           <div className="relative p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 p-2.5 shadow-lg">
+              <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] p-2.5 shadow-lg">
                 <SparklesIcon className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -536,7 +536,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                 whileTap="tap"
                 disabled={loading || !shiftStarted || shiftEnded || !!activeBreak || !!actionLoading}
                 onClick={handleShiftEndClick}
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-3 text-sm font-medium text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-6 py-3 text-sm font-medium text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
               >
                 <span className="relative flex items-center justify-center gap-2">
                   {actionLoading === "shift-end" ? (
@@ -562,7 +562,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                 disabled={drivingModeLoading}
                 className={`rounded-xl border px-6 py-3 text-sm font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                   drivingMode
-                    ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-700"
+                    ? "border-[#A346FF]/50 bg-[#A346FF]/15 text-[#A346FF]"
                     : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
@@ -619,13 +619,13 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                             <motion.div
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              className="flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5"
+                              className="flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-2 py-0.5"
                             >
                               <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A346FF] opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#A346FF]"></span>
                               </span>
-                              <span className="text-[10px] font-medium text-blue-600">Active</span>
+                              <span className="text-[10px] font-medium text-[#A346FF]">Active</span>
                             </motion.div>
                           )}
                         </div>
@@ -747,7 +747,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
           
           <div className="relative p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-2.5 shadow-lg">
+              <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-pink-500 p-2.5 shadow-lg">
                 <CalendarIcon className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -759,9 +759,9 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-blue-500 animate-spin" />
+                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-[#A346FF] animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-blue-500 animate-pulse" />
+                    <SparklesIcon className="h-5 w-5 text-[#A346FF] animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -780,7 +780,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                         whileHover={{ scale: 1.02 }}
                         className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 p-4 shadow-md hover:shadow-lg transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-[#A346FF]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-center justify-between mb-2">
@@ -847,7 +847,7 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
                             <td className="px-6 py-4 text-sm font-medium text-slate-700">{formatDate(row.date)}</td>
                             <td className="px-6 py-4 text-sm text-slate-600">{formatTime(row.shiftStart || row.checkIn)}</td>
                             <td className="px-6 py-4 text-sm text-slate-600">{formatTime(row.shiftEnd || row.checkOut)}</td>
-                            <td className="px-6 py-4 text-sm font-medium text-blue-600">{row.totalWorkMinutes || 0} mins</td>
+                            <td className="px-6 py-4 text-sm font-medium text-[#A346FF]">{row.totalWorkMinutes || 0} mins</td>
                             <td className="px-6 py-4">
                               {row.isLate ? (
                                 <span className="inline-flex items-center gap-1 text-amber-600">
@@ -897,3 +897,4 @@ export default function EmployeeAttendancePanel({ hideControls = false }) {
     </motion.div>
   );
 }
+

@@ -55,7 +55,7 @@ export default function SidebarCalendar() {
               (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
             )
           }
-          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-cyan-500/40 hover:bg-slate-900"
+          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-[#A346FF]/40 hover:bg-slate-900"
           aria-label="Previous month"
         >
           Prev
@@ -68,7 +68,7 @@ export default function SidebarCalendar() {
               (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
             )
           }
-          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-cyan-500/40 hover:bg-slate-900"
+          className="rounded-lg border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-300 transition hover:border-[#A346FF]/40 hover:bg-slate-900"
           aria-label="Next month"
         >
           Next
@@ -99,9 +99,9 @@ export default function SidebarCalendar() {
               key={date.toISOString()}
               className={`flex h-6 w-6 items-center justify-center rounded text-[11px] ${
                 isToday && isWeekend
-                  ? "bg-rose-500 font-semibold text-white ring-2 ring-cyan-400"
+                  ? "bg-rose-500 font-semibold text-white ring-2 ring-[#A346FF]"
                   : isToday
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-500 font-semibold text-white"
+                    ? "bg-gradient-to-r from-[#A346FF] to-[#A346FF] font-semibold text-white"
                     : isWeekend
                       ? "bg-rose-500/10 font-semibold text-rose-300"
                       : "text-slate-300 hover:bg-slate-800"
@@ -115,3 +115,4 @@ export default function SidebarCalendar() {
     </div>
   );
 }
+

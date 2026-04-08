@@ -49,7 +49,7 @@ export default async function ManagerDashboardPage() {
     .slice(0, 5);
 
   const cards = [
-    { label: "Employees", value: employeeCount, tone: "text-cyan-300" },
+    { label: "Employees", value: employeeCount, tone: "text-[#A346FF]" },
     { label: "Present Today", value: presentCount, tone: "text-emerald-300" },
     { label: "Late Today", value: lateCount, tone: "text-amber-300" },
     { label: "Urgent Tasks", value: urgentTasks.length, tone: "text-rose-300" },
@@ -57,8 +57,8 @@ export default async function ManagerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-3xl border border-slate-800 bg-[linear-gradient(135deg,rgba(14,165,233,0.14),rgba(15,23,42,0.95),rgba(99,102,241,0.12))] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
-        <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">Manager Analytics</p>
+      <section className="rounded-3xl border border-slate-800 bg-[linear-gradient(135deg,rgba(14,165,233,0.14),rgba(15,23,42,0.95),rgba(163,70,255,0.12))] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
+        <p className="text-xs uppercase tracking-[0.24em] text-[#A346FF]">Manager Analytics</p>
         <h1 className="mt-3 text-3xl font-semibold text-white">Operational pulse for today</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-300">
           Track attendance issues, urgent task load, and correction requests from one place.
@@ -76,7 +76,7 @@ export default async function ManagerDashboardPage() {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/manager/attendance"
-            className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+            className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
           >
             Review Attendance
           </Link>
@@ -191,7 +191,7 @@ export default async function ManagerDashboardPage() {
                     <p className="text-xs text-slate-500">{row.user?.email || "-"}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold text-cyan-300">{row.totalWorkMinutes || 0}m</p>
+                    <p className="text-lg font-semibold text-[#A346FF]">{row.totalWorkMinutes || 0}m</p>
                     <p className="text-xs text-slate-500">{row.overtimeMinutes || 0}m overtime</p>
                   </div>
                 </div>
@@ -208,3 +208,4 @@ export default async function ManagerDashboardPage() {
     </div>
   );
 }
+

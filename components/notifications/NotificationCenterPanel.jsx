@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -498,11 +498,11 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
             variants={itemVariants}
             className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#A346FF]/50 to-[#A346FF]/100" />
             
             <div className="relative p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 p-2.5 shadow-lg">
+                <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] p-2.5 shadow-lg">
                   <MegaphoneIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -521,7 +521,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                     }
                     placeholder="Message title"
                     required
-                    className="lg:col-span-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="lg:col-span-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF] transition-all duration-200"
                   />
 
                   <select
@@ -529,7 +529,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                     onChange={(event) =>
                       setBroadcast((prev) => ({ ...prev, audience: event.target.value }))
                     }
-                    className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF] transition-all duration-200"
                   >
                     {managerMode ? (
                       <option value="employees">Employees</option>
@@ -548,9 +548,9 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                     whileHover="hover"
                     whileTap="tap"
                     disabled={sending}
-                    className="relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg disabled:opacity-50 transition-all duration-300"
+                    className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-4 py-2.5 text-sm font-medium text-[#FFFFFF] shadow-lg disabled:opacity-50 transition-all duration-300"
                   >
-                    <span className="relative flex items-center justify-center gap-2">
+                    <span className="relative flex items-center justify-center gap-2 text-[#FFFFFF]">
                       {sending ? (
                         <>
                           <ArrowPathIcon className="h-4 w-4 animate-spin" />
@@ -558,7 +558,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                         </>
                       ) : (
                         <>
-                          <PaperAirplaneIcon className="h-4 w-4" />
+                          <PaperAirplaneIcon className="h-4 w-4 text-[#FFFFFF]" />
                           Send Broadcast
                         </>
                       )}
@@ -573,7 +573,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                     placeholder="Announcement message"
                     required
                     rows={3}
-                    className="lg:col-span-4 rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200 resize-none"
+                    className="lg:col-span-4 rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF] transition-all duration-200 resize-none"
                   />
                 </div>
               </form>
@@ -773,7 +773,7 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
                               </span>
                               {item.readAt && (
                                 <>
-                                  <span className="text-slate-300">•</span>
+                                  <span className="text-slate-300">�</span>
                                   <span className="text-slate-400">
                                     Read {formatTimeAgo(item.readAt)}
                                   </span>
@@ -895,3 +895,4 @@ export default function NotificationCenterPanel({ title, canBroadcast = false, m
     </motion.div>
   );
 }
+

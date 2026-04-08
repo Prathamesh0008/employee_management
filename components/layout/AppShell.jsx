@@ -1,4 +1,4 @@
-﻿  "use client";
+  "use client";
 
   import { apiFetch } from "@/lib/client-api";
   import {
@@ -755,7 +755,7 @@ const BREAK_MENU_TYPES = [
 
   return (
     <motion.div 
-      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.12),transparent_24%),linear-gradient(180deg,#050b16_0%,#0b1324_100%)]"
+      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(163,70,255,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(163,70,255,0.12),transparent_24%),linear-gradient(180deg,#050b16_0%,#0b1324_100%)]"
       initial="hidden"
       animate="visible"
     >
@@ -769,11 +769,11 @@ const BREAK_MENU_TYPES = [
               <motion.div
                 whileHover={{ rotate: 180 }}
                 transition={{ duration: 0.3 }}
-                className="h-8 w-8 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_24px_rgba(56,189,248,0.35)]"
+                className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] via-[#A346FF] to-[#A346FF] shadow-[0_0_24px_rgba(163,70,255,0.35)]"
               />
               <div className="min-w-0">
                 <h2 className="truncate text-sm font-semibold text-slate-100">Employee Portal</h2>
-                <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">{user.role}</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[#A346FF]">{user.role}</p>
               </div>
             </div>
             
@@ -850,7 +850,7 @@ const BREAK_MENU_TYPES = [
                     <motion.div
                       whileHover={{ rotate: 360 }}
                       transition={{ duration: 0.5 }}
-                      className="h-10 w-10 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_26px_rgba(56,189,248,0.35)]"
+                      className="h-10 w-10 rounded-full bg-gradient-to-r from-[#A346FF] via-[#A346FF] to-[#A346FF] shadow-[0_0_26px_rgba(163,70,255,0.35)]"
                     />
                     <div>
                       <h2 className="text-red-200 text-lg font-bold ">
@@ -881,8 +881,8 @@ const BREAK_MENU_TYPES = [
                             onClick={() => setMobileMenuOpen(false)}
                             className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
                               active
-                                ? "bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white shadow-[0_14px_30px_rgba(37,99,235,0.35)]"
-                                : "text-slate-300 hover:bg-slate-900/90 hover:text-cyan-300"
+                                ? "bg-gradient-to-r from-[#A346FF] via-[#A346FF] to-[#A346FF] text-white shadow-[0_14px_30px_rgba(163,70,255,0.35)]"
+                                : "text-slate-300 hover:bg-slate-900/90 hover:text-[#A346FF]"
                             }`}
                           >
                             <Icon className={`h-5 w-5 ${active ? "text-white" : "text-slate-500"}`} />
@@ -890,7 +890,7 @@ const BREAK_MENU_TYPES = [
                             {active && (
                               <motion.div
                                 layoutId="active-indicator"
-                                className="h-1.5 w-1.5 rounded-full bg-cyan-100"
+                                className="h-1.5 w-1.5 rounded-full bg-[#A346FF]"
                               />
                             )}
                           </Link>
@@ -908,7 +908,7 @@ const BREAK_MENU_TYPES = [
                   className="border-t border-slate-800/80 p-4"
                 >
                   <div className="flex w-full items-center gap-3 rounded-xl p-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 font-semibold text-white shadow-[0_0_24px_rgba(56,189,248,0.24)]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-[#A346FF] via-[#A346FF] to-[#A346FF] font-semibold text-white shadow-[0_0_24px_rgba(163,70,255,0.24)]">
                       {user.name.charAt(0)}
                     </div>
                     <div className="flex-1 text-left">
@@ -960,7 +960,7 @@ const BREAK_MENU_TYPES = [
             >
               <div>
                 <motion.h1 
-                  className="text-slate-400 bg-clip-text text-2xl font-bold text-transparent"
+                  className="text-2xl font-bold text-slate-100"
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
@@ -1160,3 +1160,5 @@ const BREAK_MENU_TYPES = [
     </motion.div>
   );
 }
+
+

@@ -51,12 +51,12 @@ const STATUS_STYLES = {
 };
 
 const BREAK_STATUS_STYLES = {
-  active: "bg-blue-100 text-blue-700 border-blue-200 animate-pulse",
+  active: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF] animate-pulse",
   completed: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
 const BREAK_TYPE_STYLES = {
-  break: "bg-cyan-100 text-cyan-700 border-cyan-200",
+  break: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
 };
 
 function normalizeBreakType() {
@@ -279,7 +279,7 @@ export default function AttendanceOverviewPanel({ title }) {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 p-3 sm:p-4 md:p-6"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-[#A346FF]/30 to-[#A346FF]/30 p-3 sm:p-4 md:p-6"
       initial="hidden"
       animate={isLoaded ? "visible" : "hidden"}
       variants={containerVariants}
@@ -288,12 +288,12 @@ export default function AttendanceOverviewPanel({ title }) {
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl"
+        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-indigo-500/5 blur-3xl"
+        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
 
       <div className="relative space-y-4 sm:space-y-6">
@@ -302,10 +302,10 @@ export default function AttendanceOverviewPanel({ title }) {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-[#A346FF]/10" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#A346FF] to-[#A346FF] bg-clip-text text-transparent">
                 {title}
               </h1>
               <p className="mt-1 text-sm text-slate-500">
@@ -317,7 +317,7 @@ export default function AttendanceOverviewPanel({ title }) {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
               >
-                <CalendarIcon className="h-4 w-4 text-blue-500" />
+                <CalendarIcon className="h-4 w-4 text-[#A346FF]" />
                 <span className="text-xs sm:text-sm font-medium text-slate-700">
                   {formatDate(new Date(selectedDate))}
                 </span>
@@ -339,10 +339,10 @@ export default function AttendanceOverviewPanel({ title }) {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="flex items-center gap-2 rounded-full bg-cyan-50 px-3 py-1.5"
+                  className="flex items-center gap-2 rounded-full bg-[#A346FF]/15 px-3 py-1.5"
                 >
-                  <TruckIcon className="h-4 w-4 text-cyan-700" />
-                  <span className="text-xs font-medium text-cyan-700">{summary.drivingEmployees} Driving</span>
+                  <TruckIcon className="h-4 w-4 text-[#A346FF]" />
+                  <span className="text-xs font-medium text-[#A346FF]">{summary.drivingEmployees} Driving</span>
                 </motion.div>
               )}
             </div>
@@ -397,7 +397,7 @@ export default function AttendanceOverviewPanel({ title }) {
                     type="date"
                     value={selectedDate}
                     onChange={(event) => setSelectedDate(event.target.value)}
-                    className="rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                    className="rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF] transition-all duration-200"
                   />
                   <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 </div>
@@ -425,9 +425,9 @@ export default function AttendanceOverviewPanel({ title }) {
                   <SunIcon className="h-4 w-4 text-amber-600" />
                   <span className="text-xs font-medium text-amber-700">{summary.halfDay} Half Day</span>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-cyan-50 px-3 py-1">
-                  <TruckIcon className="h-4 w-4 text-cyan-600" />
-                  <span className="text-xs font-medium text-cyan-700">{summary.drivingEmployees} Driving</span>
+                <div className="flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-3 py-1">
+                  <TruckIcon className="h-4 w-4 text-[#A346FF]" />
+                  <span className="text-xs font-medium text-[#A346FF]">{summary.drivingEmployees} Driving</span>
                 </div>
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function AttendanceOverviewPanel({ title }) {
               value: summary.totalAttendance,
               subValue: `${attendanceRate}% rate`,
               color: "indigo",
-              gradient: "from-indigo-500 to-purple-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: CheckCircleIcon, 
@@ -468,7 +468,7 @@ export default function AttendanceOverviewPanel({ title }) {
               value: formatMinutes(summary.totalWorkMinutes),
               subValue: `${summary.totalLateMinutes} mins late`,
               color: "blue",
-              gradient: "from-blue-500 to-indigo-500"
+              gradient: "from-[#A346FF] to-[#A346FF]"
             },
             { 
               icon: BeakerIcon, 
@@ -476,7 +476,7 @@ export default function AttendanceOverviewPanel({ title }) {
               value: summary.totalBreaks,
               subValue: `${summary.activeBreaks} active`,
               color: "purple",
-              gradient: "from-purple-500 to-pink-500"
+              gradient: "from-[#A346FF] to-pink-500"
             },
           ].map((stat, idx) => (
             <motion.div
@@ -592,7 +592,7 @@ export default function AttendanceOverviewPanel({ title }) {
                                 <p className="text-sm font-bold text-slate-100">{row.user?.name || "Unknown"}</p>
                                 <p className="text-xs text-slate-400">{row.user?.email}</p>
                                 {isDrivingModeOn(row) ? (
-                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#A346FF]">
                                     <TruckIcon className="h-3 w-3" />
                                     Driving
                                   </span>
@@ -629,7 +629,7 @@ export default function AttendanceOverviewPanel({ title }) {
                               </div>
                               <div className="text-center">
                                 <span className="text-slate-400">OT</span>
-                                <p className="font-medium text-blue-600">{row.overtimeMinutes || 0}m</p>
+                                <p className="font-medium text-[#A346FF]">{row.overtimeMinutes || 0}m</p>
                               </div>
                             </div>
                           </div>
@@ -695,14 +695,14 @@ export default function AttendanceOverviewPanel({ title }) {
                             </td>
                             <td className="px-4 py-3">
                               {row.overtimeMinutes ? (
-                                <span className="text-sm font-medium text-blue-600">{row.overtimeMinutes} mins</span>
+                                <span className="text-sm font-medium text-[#A346FF]">{row.overtimeMinutes} mins</span>
                               ) : (
                                 <span className="text-sm text-slate-400">-</span>
                               )}
                             </td>
                             <td className="px-4 py-3">
                               {isDrivingModeOn(row) ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-semibold text-cyan-700">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-2.5 py-1 text-xs font-semibold text-[#A346FF]">
                                   <TruckIcon className="h-3.5 w-3.5" />
                                   On
                                 </span>
@@ -751,7 +751,7 @@ export default function AttendanceOverviewPanel({ title }) {
           <div className="relative p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-2.5 shadow-lg">
+                <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-pink-500 p-2.5 shadow-lg">
                   <BeakerIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -764,7 +764,7 @@ export default function AttendanceOverviewPanel({ title }) {
                 <select
                   value={breakFilter}
                   onChange={(e) => setBreakFilter(e.target.value)}
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20"
                 >
                   <option value="all">All Breaks</option>
                   <option value="active">Active</option>
@@ -776,9 +776,9 @@ export default function AttendanceOverviewPanel({ title }) {
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-purple-500 animate-spin" />
+                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-[#A346FF] animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-purple-500 animate-pulse" />
+                    <SparklesIcon className="h-5 w-5 text-[#A346FF] animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -797,19 +797,19 @@ export default function AttendanceOverviewPanel({ title }) {
                         whileHover={{ scale: 1.02 }}
                         className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 p-4 transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/8 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/10 to-pink-500/8 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-medium">
+                              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] to-pink-500 flex items-center justify-center text-white text-xs font-medium">
                                 {row.user?.name?.charAt(0) || "U"}
                               </div>
                               <div>
                                 <p className="text-sm font-bold text-slate-100">{row.user?.name || "Unknown"}</p>
                                 <p className="text-xs text-slate-400">{row.user?.email}</p>
                                 {isDrivingModeOn(row) ? (
-                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2 py-0.5 text-[10px] font-semibold text-cyan-700">
+                                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-2 py-0.5 text-[10px] font-semibold text-[#A346FF]">
                                     <TruckIcon className="h-3 w-3" />
                                     Driving
                                   </span>
@@ -839,7 +839,7 @@ export default function AttendanceOverviewPanel({ title }) {
                             
                             <div className="flex items-center justify-between">
                               <span className="text-xs text-slate-500">Duration</span>
-                              <span className="text-sm font-medium text-purple-600">{formatMinutes(row.durationMinutes)}</span>
+                              <span className="text-sm font-medium text-[#A346FF]">{formatMinutes(row.durationMinutes)}</span>
                             </div>
                           </div>
                         </div>
@@ -876,7 +876,7 @@ export default function AttendanceOverviewPanel({ title }) {
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-medium">
+                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] to-pink-500 flex items-center justify-center text-white text-xs font-medium">
                                   {row.user?.name?.charAt(0) || "U"}
                                 </div>
                                 <div>
@@ -893,11 +893,11 @@ export default function AttendanceOverviewPanel({ title }) {
                             <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.startTime)}</td>
                             <td className="px-4 py-3 text-sm text-slate-300">{formatTime(row.endTime)}</td>
                             <td className="px-4 py-3">
-                              <span className="text-sm font-medium text-purple-600">{formatMinutes(row.durationMinutes)}</span>
+                              <span className="text-sm font-medium text-[#A346FF]">{formatMinutes(row.durationMinutes)}</span>
                             </td>
                             <td className="px-4 py-3">
                               {isDrivingModeOn(row) ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-semibold text-cyan-700">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[#A346FF]/15 px-2.5 py-1 text-xs font-semibold text-[#A346FF]">
                                   <TruckIcon className="h-3.5 w-3.5" />
                                   On
                                 </span>
@@ -945,7 +945,7 @@ export default function AttendanceOverviewPanel({ title }) {
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 p-4 shadow-lg"
+              className="rounded-xl bg-gradient-to-br from-[#A346FF] to-[#A346FF] p-4 shadow-lg"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-white/20 p-2">
@@ -1000,3 +1000,4 @@ export default function AttendanceOverviewPanel({ title }) {
     </motion.div>
   );
 }
+

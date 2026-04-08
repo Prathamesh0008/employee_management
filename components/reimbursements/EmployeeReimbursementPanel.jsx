@@ -272,7 +272,7 @@ export default function EmployeeReimbursementPanel({ initialReimbursements = [] 
             <button
               type="submit"
               disabled={submitting}
-              className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:bg-indigo-300"
+              className="rounded bg-[#A346FF] px-4 py-2 text-sm font-medium text-white disabled:bg-[#A346FF]"
             >
               {submitting ? "Submitting..." : "Submit Reimbursement"}
             </button>
@@ -395,3 +395,4 @@ export default function EmployeeReimbursementPanel({ initialReimbursements = [] 
     </div>
   );
 }
+

@@ -21,7 +21,7 @@ const PRIORITY_STYLES = {
 
 const STATUS_STYLES = {
   pending: "bg-slate-500/10 text-slate-200",
-  "in-progress": "bg-blue-500/10 text-blue-300",
+  "in-progress": "bg-[#A346FF]/10 text-[#A346FF]",
   completed: "bg-emerald-500/10 text-emerald-300",
 };
 
@@ -75,7 +75,7 @@ export default function TaskReportPanel({ title }) {
     <section className="rounded-3xl border border-slate-800 bg-slate-950/80 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.35)]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <div className="inline-flex rounded-2xl bg-cyan-500/10 p-3 text-cyan-300">
+          <div className="inline-flex rounded-2xl bg-[#A346FF]/10 p-3 text-[#A346FF]">
             <PresentationChartLineIcon className="h-6 w-6" />
           </div>
           <h2 className="mt-4 text-2xl font-semibold text-white">{title}</h2>
@@ -93,7 +93,7 @@ export default function TaskReportPanel({ title }) {
               max={12}
               value={month}
               onChange={(event) => setMonth(Number(event.target.value))}
-              className="w-full rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-500"
+              className="w-full rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 outline-none transition focus:border-[#A346FF]"
             />
           </div>
           <div className="space-y-1">
@@ -104,7 +104,7 @@ export default function TaskReportPanel({ title }) {
               max={2100}
               value={year}
               onChange={(event) => setYear(Number(event.target.value))}
-              className="w-full rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-500"
+              className="w-full rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 outline-none transition focus:border-[#A346FF]"
             />
           </div>
           <button
@@ -117,7 +117,7 @@ export default function TaskReportPanel({ title }) {
           </button>
           <a
             href={csvLink}
-            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
+            className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
           >
             <DocumentArrowDownIcon className="h-4 w-4" />
             Export CSV
@@ -139,7 +139,7 @@ export default function TaskReportPanel({ title }) {
           { label: "Comments", value: report?.summary?.commentCount || 0, icon: ChatBubbleLeftRightIcon },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-            <item.icon className="h-5 w-5 text-cyan-300" />
+            <item.icon className="h-5 w-5 text-[#A346FF]" />
             <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
             <p className="mt-1 text-2xl font-semibold text-white">{item.value}</p>
           </div>
@@ -200,3 +200,4 @@ export default function TaskReportPanel({ title }) {
     </section>
   );
 }
+

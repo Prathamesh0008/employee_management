@@ -28,7 +28,7 @@ const PRIORITY_STYLES = {
 
 const STATUS_STYLES = {
   pending: "bg-slate-50 text-slate-700 border-slate-200",
-  "in-progress": "bg-blue-50 text-blue-700 border-blue-200",
+  "in-progress": "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
   completed: "bg-green-50 text-green-700 border-green-200",
 };
 const AUTO_REFRESH_MS = 5000;
@@ -231,7 +231,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 md:p-6 lg:p-8"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-[#A346FF] p-4 md:p-6 lg:p-8"
       initial="hidden"
       animate={isLoaded ? "visible" : "hidden"}
       variants={containerVariants}
@@ -243,7 +243,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
       >
         <div>
           <motion.h1 
-            className="text-2xl font-bold bg-gradient-to-r from-indigo-900 to-indigo-700 bg-clip-text text-transparent md:text-3xl"
+            className="text-2xl font-bold bg-gradient-to-r from-[#A346FF] to-[#A346FF] bg-clip-text text-transparent md:text-3xl"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -264,7 +264,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <ClipboardDocumentListIcon className="h-5 w-5 text-indigo-500" />
+          <ClipboardDocumentListIcon className="h-5 w-5 text-[#A346FF]" />
           <span className="text-sm font-medium text-slate-700">
             {tasks.length} {tasks.length === 1 ? 'Task' : 'Tasks'} Assigned
           </span>
@@ -292,8 +292,8 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
         className="mb-8 rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-lg backdrop-blur-sm"
       >
         <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-full bg-indigo-100 p-2">
-            <PlusIcon className="h-5 w-5 text-indigo-600" />
+          <div className="rounded-full bg-[#A346FF]/15 p-2">
+            <PlusIcon className="h-5 w-5 text-[#A346FF]" />
           </div>
           <h2 className="text-xl font-semibold text-slate-900">Assign New Task</h2>
         </div>
@@ -314,7 +314,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                 value={form.title}
                 onChange={onChange}
                 placeholder="Enter task title"
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
               />
             </motion.div>
 
@@ -332,7 +332,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                   required
                   value={form.assignedTo}
                   onChange={onChange}
-                  className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-10 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-10 transition-all focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
                 >
                   {employees.map((employee) => (
                     <option key={employee._id} value={employee._id}>
@@ -359,7 +359,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                 onChange={onChange}
                 placeholder="Describe the task in detail..."
                 rows={3}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
               />
             </motion.div>
 
@@ -376,7 +376,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                   name="priority"
                   value={form.priority}
                   onChange={onChange}
-                  className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-10 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-10 transition-all focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
                 >
                   <option value="low">Low Priority</option>
                   <option value="medium">Medium Priority</option>
@@ -401,7 +401,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                   required
                   value={form.taskDate}
                   onChange={onChange}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-all focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
                 />
                 <CalendarIcon className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
               </div>
@@ -430,7 +430,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
               disabled={submitting || employees.length === 0}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="relative rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white shadow-md transition-colors hover:bg-indigo-700 disabled:bg-indigo-400"
+              className="relative rounded-lg bg-[#A346FF] px-6 py-2.5 text-sm font-medium text-white shadow-md transition-colors hover:bg-[#A346FF] disabled:bg-[#A346FF]"
             >
               {submitting ? (
                 <span className="flex items-center gap-2">
@@ -470,8 +470,8 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
       >
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-indigo-100 p-2">
-              <ClipboardDocumentListIcon className="h-5 w-5 text-indigo-600" />
+            <div className="rounded-full bg-[#A346FF]/15 p-2">
+              <ClipboardDocumentListIcon className="h-5 w-5 text-[#A346FF]" />
             </div>
             <h2 className="text-xl font-semibold text-slate-900">Tasks Assigned By You</h2>
           </div>
@@ -554,7 +554,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                 <button
                   type="button"
                   onClick={() => openTaskDetails(task)}
-                  className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-[#A346FF] hover:text-[#A346FF]"
                 >
                   <EyeIcon className="h-3.5 w-3.5" />
                   View comments
@@ -593,7 +593,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                         <button
                           type="button"
                           onClick={() => openTaskDetails(task)}
-                          className="text-left font-medium text-slate-900 hover:text-indigo-700"
+                          className="text-left font-medium text-slate-900 hover:text-[#A346FF]"
                         >
                           {task.title}
                         </button>
@@ -606,7 +606,7 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                         <button
                           type="button"
                           onClick={() => openTaskDetails(task)}
-                          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#A346FF] hover:text-[#A346FF]"
                         >
                           <EyeIcon className="h-3.5 w-3.5" />
                           View comments
@@ -615,8 +615,8 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                          <span className="text-xs font-medium text-indigo-700">
+                        <div className="h-8 w-8 rounded-full bg-[#A346FF]/15 flex items-center justify-center">
+                          <span className="text-xs font-medium text-[#A346FF]">
                             {task.assignedTo?.name?.charAt(0) || "U"}
                           </span>
                         </div>
@@ -698,3 +698,4 @@ export default function AssignTaskPanel({ employees, initialTasks }) {
     </motion.div>
   );
 }
+

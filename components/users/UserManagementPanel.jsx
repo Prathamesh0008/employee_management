@@ -43,15 +43,15 @@ const DEFAULT_FORM = {
 };
 
 const ROLE_STYLES = {
-  admin: "bg-purple-100 text-purple-700 border-purple-200",
-  manager: "bg-blue-100 text-blue-700 border-blue-200",
+  admin: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
+  manager: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
   employee: "bg-emerald-100 text-emerald-700 border-emerald-200",
 };
 
 const GENDER_STYLES = {
-  male: "bg-blue-100 text-blue-700 border-blue-200",
+  male: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
   female: "bg-pink-100 text-pink-700 border-pink-200",
-  other: "bg-purple-100 text-purple-700 border-purple-200",
+  other: "bg-[#A346FF]/15 text-[#A346FF] border-[#A346FF]",
 };
 
 function getShiftByGender(gender) {
@@ -339,7 +339,7 @@ export default function UserManagementPanel() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 p-3 sm:p-4 md:p-6"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-[#A346FF]/30 to-[#A346FF]/30 p-3 sm:p-4 md:p-6"
       initial="hidden"
       animate={isLoaded ? "visible" : "hidden"}
       variants={containerVariants}
@@ -348,12 +348,12 @@ export default function UserManagementPanel() {
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-indigo-500/5 blur-3xl"
+        className="fixed left-0 top-20 h-64 w-64 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
       <motion.div
         variants={floatingAnimation}
         animate="animate"
-        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-purple-500/5 blur-3xl"
+        className="fixed bottom-20 right-0 h-80 w-80 rounded-full bg-[#A346FF]/5 blur-3xl"
       />
 
       <div className="relative space-y-4 sm:space-y-6">
@@ -362,7 +362,7 @@ export default function UserManagementPanel() {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl p-4 sm:p-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 to-purple-600/5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-[#A346FF]/10" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold  text-red-200">
@@ -377,7 +377,7 @@ export default function UserManagementPanel() {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm border border-slate-200"
               >
-                <UsersIcon className="h-4 w-4 text-indigo-500" />
+                <UsersIcon className="h-4 w-4 text-[#A346FF]" />
                 <span className="text-xs sm:text-sm font-medium text-slate-700">
                   {stats.total} Employees
                 </span>
@@ -425,8 +425,8 @@ export default function UserManagementPanel() {
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
         >
           {[
-            { icon: UsersIcon, label: "Total Users", value: stats.total, color: "indigo", gradient: "from-indigo-500 to-purple-500" },
-            { icon: BriefcaseIcon, label: "Managers", value: stats.managers, color: "blue", gradient: "from-blue-500 to-indigo-500" },
+            { icon: UsersIcon, label: "Total Users", value: stats.total, color: "purple", gradient: "from-[#A346FF] to-[#A346FF]" },
+            { icon: BriefcaseIcon, label: "Managers", value: stats.managers, color: "purple", gradient: "from-[#A346FF] to-[#A346FF]" },
             { icon: UserCircleIcon, label: "Employees", value: stats.employees, color: "emerald", gradient: "from-emerald-500 to-green-500" },
             { icon: SunIcon, label: "Women", value: stats.women, color: "pink", gradient: "from-pink-500 to-rose-500" },
             { icon: CurrencyDollarIcon, label: "Total Salary", value: `$${stats.totalSalary.toLocaleString()}`, color: "amber", gradient: "from-amber-500 to-orange-500" },
@@ -456,11 +456,11 @@ export default function UserManagementPanel() {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
         >
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50" /> */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#A346FF]/10 to-[#A346FF]/10" /> */}
           
           <div className="relative p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 p-2.5 shadow-lg">
+              <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-[#A346FF] p-2.5 shadow-lg">
                 {editUserId ? <PencilSquareIcon className="h-5 w-5 text-white" /> : <UserPlusIcon className="h-5 w-5 text-white" />}
               </div>
               <div>
@@ -487,7 +487,7 @@ export default function UserManagementPanel() {
                     onChange={onInputChange}
                     placeholder="John Doe"
                     required
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -504,7 +504,7 @@ export default function UserManagementPanel() {
                     placeholder="john@company.com"
                     required
                     disabled={Boolean(editUserId)}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200 disabled:bg-slate-50 disabled:text-slate-500"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200 disabled:bg-slate-50 disabled:text-slate-500"
                   />
                 </div>
 
@@ -522,7 +522,7 @@ export default function UserManagementPanel() {
                       placeholder="••••••••"
                       required
                       minLength={8}
-                      className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                      className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                     />
                   </div>
                 )}
@@ -537,7 +537,7 @@ export default function UserManagementPanel() {
                     name="role"
                     value={form.role}
                     onChange={onInputChange}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   >
                     <option value="employee">Employee</option>
                     <option value="manager">Manager</option>
@@ -553,7 +553,7 @@ export default function UserManagementPanel() {
                     name="gender"
                     value={form.gender}
                     onChange={onInputChange}
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   >
                     {GENDER_OPTIONS.map((item) => (
                       <option key={item} value={item}>
@@ -568,11 +568,11 @@ export default function UserManagementPanel() {
                     <CalendarIcon className="h-3 w-3" />
                     Shift Assignment
                   </label>
-                  <div className="rounded-lg border border-slate-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2.5">
-                    <p className="text-sm font-semibold text-indigo-700">
+                  <div className="rounded-lg border border-slate-200 bg-gradient-to-r from-[#A346FF]/10 to-[#A346FF]/10 px-4 py-2.5">
+                    <p className="text-sm font-semibold text-[#A346FF]">
                       {getShiftMetaByGender(form.gender).label}
                     </p>
-                    <p className="text-xs text-indigo-500">
+                    <p className="text-xs text-[#A346FF]">
                       {getShiftMetaByGender(form.gender).time}
                     </p>
                   </div>
@@ -589,7 +589,7 @@ export default function UserManagementPanel() {
                     value={form.department}
                     onChange={onInputChange}
                     placeholder="Engineering"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -603,7 +603,7 @@ export default function UserManagementPanel() {
                     value={form.designation}
                     onChange={onInputChange}
                     placeholder="Software Engineer"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -618,7 +618,7 @@ export default function UserManagementPanel() {
                     value={form.employeeCode}
                     onChange={onInputChange}
                     placeholder="EMP001"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -632,7 +632,7 @@ export default function UserManagementPanel() {
                     value={form.phone}
                     onChange={onInputChange}
                     placeholder="+1 234 567 8900"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -648,7 +648,7 @@ export default function UserManagementPanel() {
                     value={form.baseSalary}
                     onChange={onInputChange}
                     placeholder="50000"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]/20 transition-all duration-200"
                   />
                 </div>
 
@@ -656,7 +656,7 @@ export default function UserManagementPanel() {
                 <div className="md:col-span-3">
                   <div className="rounded-lg border border-slate-200 p-4">
                     <p className="text-sm font-medium text-slate-700 mb-3 flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-indigo-500" />
+                      <CalendarIcon className="h-4 w-4 text-[#A346FF]" />
                       Weekly Off Days
                     </p>
                     <div className="flex flex-wrap gap-4">
@@ -679,8 +679,8 @@ export default function UserManagementPanel() {
                             />
                             <div className={`w-4 h-4 border-2 rounded transition-all duration-200 ${
                               form.weeklyOffDays.includes(item.d)
-                                ? 'bg-indigo-500 border-indigo-500'
-                                : 'border-slate-300 group-hover:border-indigo-300'
+                                ? 'bg-[#A346FF] border-[#A346FF]'
+                                : 'border-slate-300 group-hover:border-[#A346FF]/50'
                             }`}>
                               {form.weeklyOffDays.includes(item.d) && (
                                 <svg className="w-3 h-3 text-white mx-auto" viewBox="0 0 20 20" fill="currentColor">
@@ -690,7 +690,7 @@ export default function UserManagementPanel() {
                             </div>
                           </div>
                           <span className={`text-sm ${
-                            form.weeklyOffDays.includes(item.d) ? 'text-indigo-600 font-medium' : 'text-slate-600'
+                            form.weeklyOffDays.includes(item.d) ? 'text-[#A346FF] font-medium' : 'text-slate-600'
                           }`}>
                             {item.label}
                           </span>
@@ -709,7 +709,7 @@ export default function UserManagementPanel() {
                   whileHover="hover"
                   whileTap="tap"
                   disabled={submitting}
-                  className="relative overflow-hidden rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg disabled:opacity-50 transition-all duration-300"
+                  className="relative overflow-hidden rounded-lg bg-gradient-to-r from-[#A346FF] to-[#A346FF] px-6 py-2.5 text-sm font-medium text-white shadow-lg disabled:opacity-50 transition-all duration-300"
                 >
                   <span className="relative flex items-center justify-center gap-2">
                     {submitting ? (
@@ -748,12 +748,12 @@ export default function UserManagementPanel() {
           variants={itemVariants}
           className="relative overflow-hidden rounded-2xl bg-white shadow-xl"
         >
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50" /> */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#A346FF]/50 to-pink-50/50" /> */}
           
           <div className="relative p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-2.5 shadow-lg">
+                <div className="rounded-xl bg-gradient-to-r from-[#A346FF] to-pink-500 p-2.5 shadow-lg">
                   <UsersIcon className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -770,7 +770,7 @@ export default function UserManagementPanel() {
                     placeholder="Search employees..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full sm:w-64 rounded-lg border border-slate-200 py-2 pl-10 pr-4 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all duration-200"
+                    className="w-full sm:w-64 rounded-lg border border-slate-200 py-2 pl-10 pr-4 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF] transition-all duration-200"
                   />
                   <UserCircleIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 </div>
@@ -809,7 +809,7 @@ export default function UserManagementPanel() {
                   <select
                     value={roleFilter}
                     onChange={(e) => setRoleFilter(e.target.value)}
-                    className="w-full sm:w-auto rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                    className="w-full sm:w-auto rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-[#A346FF] focus:outline-none focus:ring-2 focus:ring-[#A346FF]"
                   >
                     <option value="all">All Roles</option>
                     <option value="admin">Admin</option>
@@ -823,9 +823,9 @@ export default function UserManagementPanel() {
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-purple-500 animate-spin" />
+                  <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-[#A346FF] animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparklesIcon className="h-5 w-5 text-purple-500 animate-pulse" />
+                    <SparklesIcon className="h-5 w-5 text-[#A346FF] animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -844,12 +844,12 @@ export default function UserManagementPanel() {
                         whileHover={{ scale: 1.02 }}
                         className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 p-4 shadow-md hover:shadow-lg transition-all duration-300"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#A346FF]/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         <div className="relative">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#A346FF] to-pink-500 flex items-center justify-center text-white text-sm font-bold">
                                 {user.name?.charAt(0) || "U"}
                               </div>
                               <div>
@@ -894,7 +894,7 @@ export default function UserManagementPanel() {
                               whileTap={{ scale: 0.95 }}
                               type="button"
                               onClick={() => startEdit(user)}
-                              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors"
+                              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-[#A346FF] hover:bg-[#A346FF]/10 transition-colors"
                             >
                               <PencilSquareIcon className="h-3 w-3" />
                               Edit Profile
@@ -945,7 +945,7 @@ export default function UserManagementPanel() {
                           >
                             <td className="px-3 py-3">
                               <div className="flex min-w-0 items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
+                                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#A346FF] to-pink-500 flex items-center justify-center text-white text-xs font-bold">
                                   {user.name?.charAt(0) || "U"}
                                 </div>
                                 <div className="min-w-0">
@@ -983,7 +983,7 @@ export default function UserManagementPanel() {
                                 whileTap={{ scale: 0.95 }}
                                 type="button"
                                 onClick={() => startEdit(user)}
-                                className="inline-flex min-w-[72px] shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                className="inline-flex min-w-[72px] shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-[#A346FF] hover:bg-[#A346FF]/10 transition-colors"
                               >
                                 <PencilSquareIcon className="h-3 w-3" />
                                 Edit
